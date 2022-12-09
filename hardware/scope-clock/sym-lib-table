@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name "eh_transformers")(type "KiCad")(uri "${KIPRJMOD}/eh_transformers.kicad_sym")(options "")(descr ""))
+  (lib (name "CRT")(type "KiCad")(uri "${KIPRJMOD}/CRT.kicad_sym")(options "")(descr ""))
+  (lib (name "AD7302")(type "KiCad")(uri "${KIPRJMOD}/AD7302.kicad_sym")(options "")(descr ""))
+)
