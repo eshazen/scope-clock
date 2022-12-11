@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name "CRT_base")(type "KiCad")(uri "${KIPRJMOD}/CRT_base.pretty")(options "")(descr ""))
+  (lib (name "Vishay_Pot_148")(type "KiCad")(uri "${KIPRJMOD}/Vishay_Pot_148.pretty")(options "")(descr ""))
+)

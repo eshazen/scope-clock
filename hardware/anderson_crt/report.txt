@@ -1,0 +1,33 @@
+Info: Processing symbol 'N1:'.
+Info: Processing symbol 'U1:Package_DIP:DIP-4_W7.62mm'.
+Info: Processing symbol 'RV3:Potentiometer_THT:Potentiometer_Vishay_148-149_Single_Horizontal'.
+Info: Processing symbol 'RV2:Potentiometer_THT:Potentiometer_Vishay_148-149_Single_Horizontal'.
+Info: Processing symbol 'RV1:Potentiometer_THT:Potentiometer_Vishay_148-149_Single_Horizontal'.
+Info: Processing symbol 'R8:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'R7:Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P12.70mm_Horizontal'.
+Info: Processing symbol 'R6:Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P12.70mm_Horizontal'.
+Info: Processing symbol 'R5:Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P15.24mm_Horizontal'.
+Info: Processing symbol 'R4:Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P12.70mm_Horizontal'.
+Info: Processing symbol 'R3:Resistor_THT:R_Axial_DIN0411_L9.9mm_D3.6mm_P12.70mm_Horizontal'.
+Info: Processing symbol 'R2:Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P15.24mm_Horizontal'.
+Info: Processing symbol 'R1:Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal'.
+Info: Processing symbol 'Q1:Package_TO_SOT_THT:TO-92_HandSolder'.
+Info: Processing symbol 'C1:Capacitor_THT:CP_Radial_D10.0mm_P5.00mm'.
+Info: Processing symbol 'J4:Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical'.
+Info: Processing symbol 'J3:Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical'.
+Info: Processing symbol 'J2:Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical'.
+Info: Processing symbol 'J1:Connector_Molex:Molex_KK-396_5273-06A_1x06_P3.96mm_Vertical'.
+Info: Processing symbol 'D3:Diode_THT:D_DO-35_SOD27_P10.16mm_Horizontal'.
+Info: Processing symbol 'D2:Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal'.
+Info: Processing symbol 'D1:Diode_THT:D_DO-35_SOD27_P10.16mm_Horizontal'.
+Info: Processing symbol 'CRT1:CRT_base:B14_diheptal'.
+Warning: No net found for symbol CRT1 pin 12.
+Warning: No net found for symbol CRT1 pin 11.
+Warning: No net found for symbol CRT1 pin 10.
+Warning: No net found for symbol CRT1 pin 8.
+Warning: No net found for symbol CRT1 pin 7.
+Warning: No net found for symbol CRT1 pin 4.
+Error: Cannot add N1 (no footprint assigned).
+
+
+Info: Total warnings: 0, errors: 1.
