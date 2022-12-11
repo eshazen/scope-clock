@@ -1,0 +1,44 @@
+InfoBegin
+InfoKey: ModDate
+InfoValue: D:20110806113022+02&apos;00&apos;
+InfoBegin
+InfoKey: Creator
+InfoValue: Acrobat 4.0 Import Plug-in for Windows
+InfoBegin
+InfoKey: CreationDate
+InfoValue: D:20110806010609+02&apos;00&apos;
+InfoBegin
+InfoKey: Producer
+InfoValue: Acrobat 4.0 Import Plug-in for Windows
+InfoBegin
+InfoKey: Subject
+InfoValue: FP-2011-08-05
+InfoBegin
+InfoKey: Author
+InfoValue: RCA
+InfoBegin
+InfoKey: Title
+InfoValue: 2AP1A
+PdfID0: c38eabbc08fcb72ef9e4cf45fa63a502
+PdfID1: c38eabbc08fcb72ef9e4cf45fa63a502
+NumberOfPages: 4
+PageMediaBegin
+PageMediaNumber: 1
+PageMediaRotation: 0
+PageMediaRect: 0 0 275.56 482.23
+PageMediaDimensions: 275.56 482.23
+PageMediaBegin
+PageMediaNumber: 2
+PageMediaRotation: 0
+PageMediaRect: 0 0 275.56 482.23
+PageMediaDimensions: 275.56 482.23
+PageMediaBegin
+PageMediaNumber: 3
+PageMediaRotation: 0
+PageMediaRect: 0 0 275.56 482.23
+PageMediaDimensions: 275.56 482.23
+PageMediaBegin
+PageMediaNumber: 4
+PageMediaRotation: 0
+PageMediaRect: 0 0 275.56 482.23
+PageMediaDimensions: 275.56 482.23
