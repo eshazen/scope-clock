@@ -1006,6 +1006,11 @@
     (pad "12" thru_hole circle (at 20.024 -9.643 180) (size 5.715 5.715) (drill 3.81) (layers *.Cu *.Mask) (tstamp 6837e5ab-a504-4696-8330-20dfbb3b2402))
     (pad "14" thru_hole circle (at 4.946 -21.668 180) (size 5.715 5.715) (drill 3.81) (layers *.Cu *.Mask)
       (net 6 "/H2") (pinfunction "H2") (pintype "passive") (tstamp e9baacc3-9501-433d-83af-a17fe63441bf))
+    (model "${KIPRJMOD}/3D/3bp1.wrl"
+      (offset (xyz 0 0 6.35))
+      (scale (xyz 0.394 0.394 0.394))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "Diode_THT:D_DO-35_SOD27_P10.16mm_Horizontal" (layer "F.Cu")
