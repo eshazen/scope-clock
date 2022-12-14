@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name "Octal_Sockets")(type "KiCad")(uri "${KIPRJMOD}/Octal_Sockets.pretty")(options "")(descr ""))
+  (lib (name "HV_Ceramic_Cap")(type "KiCad")(uri "${KIPRJMOD}/HV_Ceramic_Cap.pretty")(options "")(descr ""))
+  (lib (name "Vishay_Pot_148")(type "KiCad")(uri "/home/hazen/work/scope-clock/hardware/anderson_crt/Vishay_Pot_148.pretty")(options "")(descr ""))
+)
