@@ -53,10 +53,17 @@ module logic() {
 	  cube( [3.5*mm, 4*mm, 1.6]);
 }
 
+//
+// transformer
+//
+module trans() {
+  color("#404040")
+  cylinder( h=1.6*mm, d=3.85*mm);
+}
 
 module base() {
 
-     cube( [8.5*mm, 11*mm, 1]);
+     cube( [8.5*mm, 14*mm, 1]);
 
 }
 
@@ -64,8 +71,13 @@ module base() {
 translate( [0, 0, 75]) crt();
 translate( [-10, 200, 0]) rotate( [0, 0, 180]) amp();
 
+// HV board
 translate( [0, 5, 0]) hv();
+
+// logic board
 translate( [0, 11*mm-25-4*mm, 0]) logic();
 
+// toroidal transformer
+translate( [0, -40, 75])  rotate( [90, 0, 0])  trans();
 
-translate( [ -113, -25, -10]) base();
+translate( [ -113, -100, -10]) base();
