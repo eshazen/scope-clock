@@ -12,7 +12,7 @@ module crt() {
      translate( [126, 0, -12]) {
 	  rotate( [90, 0, 180]) {
 	       translate( [0, 100, 0]) {
-		    color("red") import("anderson_crt.stl");
+		    color("green") import("anderson_crt.stl");
 		    translate( [125, -88, 3])
 			 3bp1();
 	       }
@@ -37,7 +37,35 @@ module amp() {
      }
 }
 
+//
+// high voltage board stand-in
+//
+module hv() {
+     color("red")
+     cube( [3.5*mm, 5*mm, 1.6]);
+}
+
+//
+// logic board stand-in
+//
+module logic() {
+     color("blue")
+	  cube( [3.5*mm, 4*mm, 1.6]);
+}
+
+
+module base() {
+
+     cube( [8.5*mm, 11*mm, 1]);
+
+}
+
 // move the CRT up
 translate( [0, 0, 75]) crt();
 translate( [-10, 200, 0]) rotate( [0, 0, 180]) amp();
 
+translate( [0, 5, 0]) hv();
+translate( [0, 11*mm-25-4*mm, 0]) logic();
+
+
+translate( [ -113, -25, -10]) base();
