@@ -56,9 +56,12 @@ module logic() {
 //
 // transformer
 //
+trans_dia = 4.5*mm;
+trans_thk = 2*mm;
+
 module trans() {
   color("#404040")
-  cylinder( h=1.6*mm, d=3.85*mm);
+  cylinder( h=trans_thk, d=trans_dia);
 }
 
 module base() {
