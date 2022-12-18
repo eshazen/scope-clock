@@ -20,6 +20,11 @@ something more ambitious in mind!
 
 **Status** -- CRT, transformer, PCBs for CRT and deflection amp are on the way!
 
+## More crazy ideas!
+
+* Neon tube simulated pendulum
+* Tube amp for sound for grandfather clock soundz
+
 ## Software
 
 Display the time (of course) but also various text:  weather, notifications, etc.
