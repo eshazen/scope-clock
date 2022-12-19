@@ -8,6 +8,12 @@ mm = 25.4;
 // draw CRT with bias board at origin
 // pointing in +X
 //
+// PCB dimensions
+crt_wid = 4.8*mm;
+crt_len = 3.35*mm;
+
+crt_center_x = 47;		/* WRT corner of PCB */
+
 module crt() {
      translate( [126, 0, -12]) {
 	  rotate( [90, 0, 180]) {
@@ -24,8 +30,11 @@ module crt() {
 // draw deflection amp
 // with corner at origin
 //
+amp_wid = 4*mm;
+amp_len = 7*mm;
+
 module amp() {
-     translate( [-45, -45, 0])
+     translate( [-44.5, -44.5, 0])
      rotate( [0, 0, 90])
 	  color("green")
 	  import("deflection_amp.stl");
@@ -40,17 +49,23 @@ module amp() {
 //
 // high voltage board stand-in
 //
+hv_wid = 3.5*mm;
+hv_len = 6.5*mm;
+
 module hv() {
      color("red")
-     cube( [3.5*mm, 5*mm, 1.6]);
+     cube( [hv_wid, hv_len, 1.6]);
 }
 
 //
 // logic board stand-in
 //
+logic_wid = 7*mm;
+logic_len = 2.75*mm;
+
 module logic() {
      color("blue")
-	  cube( [3.5*mm, 4*mm, 1.6]);
+	  cube( [logic_wid, logic_len, 1.6]);
 }
 
 //
@@ -64,23 +79,35 @@ module trans() {
   cylinder( h=trans_thk, d=trans_dia);
 }
 
-module base() {
 
-     cube( [8.5*mm, 14*mm, 1]);
+case_wid = 8*mm;		/* X size */
+case_len = 14*mm;		/* Y size */
+case_hgt = 6;			/* Z size */
+
+module case() {
+
+     cube( [case_wid, case_len, 1]);
 
 }
 
+case();				/* corner at origin */
+
+
 // move the CRT up
-translate( [0, 0, 75]) crt();
-translate( [-10, 200, 0]) rotate( [0, 0, 180]) amp();
-
-// HV board
-translate( [0, 5, 0]) hv();
-
-// logic board
-translate( [0, 11*mm-25-4*mm, 0]) logic();
+// translate( [case_wid/2, 2*mm, 75]) crt();
+translate( [crt_wid-crt_center_x, 4*mm, 75]) crt();
 
 // toroidal transformer
-translate( [0, -40, 75])  rotate( [90, 0, 0])  trans();
+translate( [crt_wid-crt_center_x, 2*mm, 75])  rotate( [90, 0, 0])  trans();
 
-translate( [ -113, -100, -10]) base();
+// AMP board
+translate( [case_wid-amp_wid, 4*mm, 0.25*mm]) amp();
+
+// HV board
+translate( [case_wid, 0, 0.25*mm]) rotate( [0, 0, 90]) hv();
+
+
+// logic board
+translate( [0.5*mm, case_len-logic_len, 0.25*mm]) logic();
+
+
