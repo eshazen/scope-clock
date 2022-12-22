@@ -2,6 +2,8 @@
 include <3bp1.scad>
 include <6sn7.scad>
 
+sides = 0;
+
 mm = 25.4;
 
 //
@@ -49,12 +51,14 @@ module amp() {
 //
 // high voltage board stand-in
 //
-hv_wid = 3.5*mm;
-hv_len = 6.5*mm;
+hv_wid = 6.5*mm;
+hv_len = 3.5*mm;
 
 module hv() {
-     color("red")
-     cube( [hv_wid, hv_len, 1.6]);
+     color("red") {
+//	  cube( [hv_wid, hv_len, 1.6]);
+	  translate( [-44.5, 152.3, 0]) import("psu.stl");
+     }
 }
 
 //
@@ -82,32 +86,50 @@ module trans() {
 
 case_wid = 8*mm;		/* X size */
 case_len = 14*mm;		/* Y size */
-case_hgt = 6;			/* Z size */
+case_hgt = 7*mm;			/* Z size */
+case_thk = 1.6;
 
 module case() {
 
      cube( [case_wid, case_len, 1]);
+     if( sides) {
+	  % cube( [case_wid, case_thk, case_hgt]);
+	  % cube( [case_thk, case_len, case_hgt]);
+	  translate( [case_wid, 0, 0])
+	       % cube( [case_thk, case_len, case_hgt]);
+	  translate( [0, case_len, 0])
+	       % cube( [case_wid, case_thk, case_hgt]);
+     }
 
 }
 
-case();				/* corner at origin */
+
+crt_up = 4*mm;
+
+module assembly() {
+
+     case();				/* corner at origin */
 
 
 // move the CRT up
 // translate( [case_wid/2, 2*mm, 75]) crt();
-translate( [crt_wid-crt_center_x, 4*mm, 75]) crt();
+     translate( [crt_wid-crt_center_x, 4*mm, crt_up]) crt();
 
 // toroidal transformer
-translate( [crt_wid-crt_center_x, 2*mm, 75])  rotate( [90, 0, 0])  trans();
+     translate( [crt_wid-crt_center_x, 2*mm, crt_up])  rotate( [90, 0, 0])  trans();
 
 // AMP board
-translate( [case_wid-amp_wid, 4*mm, 0.25*mm]) amp();
+     translate( [case_wid-amp_wid, 4*mm, 0.25*mm]) amp();
 
 // HV board
-translate( [case_wid, 0, 0.25*mm]) rotate( [0, 0, 90]) hv();
+     translate( [0, 0, 0.25*mm]) hv();
 
 
 // logic board
-translate( [0.5*mm, case_len-logic_len, 0.25*mm]) logic();
+     translate( [0.5*mm, case_len-logic_len, 0.25*mm]) logic();
+}
 
+
+assembly();
+// hv();
 
