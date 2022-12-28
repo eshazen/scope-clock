@@ -7,7 +7,7 @@ It's an old idea, but they just look so cool.
 
 This was going to be a simple clone of some rather simplistic
 transistor-based designs around the internet, but now I've got
-something more ambitious in mind!
+something more ambitious in mind!  Here is an early 3D preview:
 
 ![3D Preview](pix/3d_pre.jpg)
 
@@ -18,18 +18,16 @@ something more ambitious in mind!
 * Voltage-multiplier HV supply using an Antek transformer
 * Display-list based vector graphics generator (or could cheat and use a uC)
 
-**Status** -- CRT, transformer, PCBs for CRT and deflection amp are on the way!
+**Status**
 
-## More crazy ideas!
+**2022-12-28** - more or less working.  Hand-wired high voltage
+supply.  CRT PCB and deflection amp working with only a couple of tiny
+issues.
 
-* Neon tube simulated pendulum
-* Tube amp for sound for grandfather clock soundz
+Open issues:
 
-## Software
-
-Display the time (of course) but also various text:  weather, notifications, etc.
-This thing could work as a computer peripheral with a serial interface or
-maybe WiFi.
-
-Games?  Maybe https://www.nycresistor.com/2013/06/08/spacerocks/
+* HV still has ripple.  Currently there's a 200 ohm + 100uF filter, maybe need larger cap.
+* Deflection amp gets quite non-linear at around 60% deflection.
+* If you switch off all the supplies together the CRT arcs inside (oops!).  Need to shut down the -1500V first and wait many seconds, then turn off the others.  Really need to figure out some sort of shutdown circuit
+* The input has to be driven by a laptop.
 
