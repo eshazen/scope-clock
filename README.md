@@ -7,9 +7,7 @@ It's an old idea, but they just look so cool.
 
 This was going to be a simple clone of some rather simplistic
 transistor-based designs around the internet, but now I've got
-something more ambitious in mind!  Here is an early 3D preview:
-
-![3D Preview](pix/3d_pre.jpg)
+something more ambitious in mind!  Here's the prototype in action:
 
 ![Prototype](pix/overview2_800V_sm.jpg)
 
