@@ -11,6 +11,8 @@ something more ambitious in mind!  Here is an early 3D preview:
 
 ![3D Preview](pix/3d_pre.jpg)
 
+![Prototype](pix/overview2_800V_sm.jpg)
+
 ## Hardware
 
 * 3BP1(A) CRT with proper drive to +360/-1400V [pcb](https://github.com/eshazen/scope-clock/tree/main/hardware/anderson_crt)
