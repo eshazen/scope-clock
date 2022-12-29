@@ -18,6 +18,10 @@ something more ambitious in mind!  Here's the prototype in action:
 * Voltage-multiplier HV supply using an Antek transformer
 * Display-list based vector graphics generator (or could cheat and use a uC)
 
+## Attribution
+
+The CRT circuit is directly inspired by Steve Anderson's narrow-bandwidth TV (NBTV) monitor design, as found at https://www.taswegian.com/NBTV/forum/index.php.
+
 **Status**
 
 **2022-12-28** - more or less working.  Hand-wired high voltage
