@@ -30,8 +30,7 @@ issues.
 
 Open issues:
 
-* HV still has ripple.  Currently there's a 200 ohm + 100uF filter, maybe need larger cap.
-* Deflection amp gets quite non-linear at around 60% deflection.
+* Deflection amp gets quite non-linear at around 60% deflection (-1600V on CRT).  At -800V it's fine.  Low end of diff output leg is around 250V.  The range 250-320 works well.
 * If you switch off all the supplies together the CRT arcs inside (oops!).  Need to shut down the -1500V first and wait many seconds, then turn off the others.  Really need to figure out some sort of shutdown circuit
 * The input has to be driven by a laptop.
 
