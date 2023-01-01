@@ -8,6 +8,7 @@ Features:
 * UART with FT232 USB interface.  Thinking of IM6402 since it's dead simple.  Needs a 16X clock.
 * Buttons, encoders, maybe a couple of LED drives
 * Z-axis drive (9-12V to J2 on CRT board; could be +/-5V)
+* Real-time clock
 * Needs +/-5V power for DAC
 
 The CPU board interface is somewhat limited-- there are only two decoded nIORQ+Addr strobes and no access to nWR or nRD.  However, there is one address line and 5 latched outputs, which could be used for direction or additional address decoding.
