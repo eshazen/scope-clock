@@ -1,4 +1,6 @@
 (sym_lib_table
   (lib (name "UART")(type "KiCad")(uri "${KIPRJMOD}/UART.kicad_sym")(options "")(descr ""))
   (lib (name "MAX530")(type "KiCad")(uri "${KIPRJMOD}/MAX530.kicad_sym")(options "")(descr ""))
+  (lib (name "EC1110120201_with_knurled_SHAF")(type "Legacy")(uri "${KIPRJMOD}/EC1110120201_with_knurled_SHAF.lib")(options "")(descr ""))
+  (lib (name "DS1306")(type "KiCad")(uri "${KIPRJMOD}/DS1306.kicad_sym")(options "")(descr ""))
 )

@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "ShaftEnc")(type "KiCad")(uri "${KIPRJMOD}/models/EC1110120201_with_knurled_SHAFT/KiCad")(options "")(descr ""))
+)
