@@ -24,6 +24,10 @@ The CRT circuit is directly inspired by Steve Anderson's narrow-bandwidth TV (NB
 
 **Status**
 
+**2021-01-14** - Rev A tag after DAC PCBs and parts ordered.
+
+Now looking at the power supply.
+
 **2022-12-28** - more or less working.  Hand-wired high voltage
 supply.  CRT PCB and deflection amp working with only a couple of tiny
 issues.
