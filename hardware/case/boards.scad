@@ -2,7 +2,7 @@
 include <3bp1.scad>
 include <6sn7.scad>
 
-sides = 0;
+sides = 1;
 
 mm = 25.4;
 
@@ -143,8 +143,11 @@ module case() {
 }
 
 
-// small transformer params
+// filament transfomer
 fil_a = 50;  fil_b = 21;  fil_c = 44;  fil_d = 71;  fil_h = 43;
+
+// logic transfomer (LP-427)
+log_a = 43;  log_b = 21;  log_c = 49;  log_d = 70;  log_h = 43;
 
 // space between/around transformers
 trans_spc = 0.3*mm;
@@ -187,9 +190,9 @@ module assembly() {
      translate( [case_wid-fil_c/2-trans_spc*2, fil_d/2+trans_spc*0.6, case_thk]) {
 	  rotate( [0, 0, 60]) transf( fil_a, fil_b, fil_c, fil_d, fil_h);
 	  translate( [-fil_c-trans_spc, 0, 0])
-	       	  rotate( [0, 0, 60]) transf( fil_a, fil_b, fil_c, fil_d, fil_h);
-	  translate( [2*(-fil_c-trans_spc), 0, 0])
-	       	  rotate( [0, 0, 60]) transf( fil_a, fil_b, fil_c, fil_d, fil_h);
+	       	  rotate( [0, 0, 60]) transf( log_a, log_b, log_c, log_d, log_h);
+	  translate( [2*(-log_c-trans_spc), 0, 0])
+	       	  rotate( [0, 0, 60]) transf( log_a, log_b, log_c, log_d, log_h);
      }
      
 //     translate( [case_wid-fil_d/2-trans_spc, fil_c/2+trans_spc, case_thk]) {
