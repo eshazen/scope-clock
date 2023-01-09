@@ -10,6 +10,7 @@ transistor-based designs around the internet, but now I've got
 something more ambitious in mind!  Here's the prototype in action:
 
 ![Prototype](pix/overview2_800V_sm.jpg)
+![3D View](pix/3d_12x12_sm.jpg)
 
 ## Hardware
 

@@ -9,6 +9,18 @@ mm = 25.4;
 // PCB standoff height
 pcb_so = 0.25*mm;
 
+// overal case dimensions
+// it sort of fits in 12x12
+case_wid = 12*mm;		/* X size */
+case_len = 12*mm;		/* Y size */
+
+case_hgt = 7*mm;			/* Z size */
+case_thk = 1.6;
+
+// height of CRT centerline
+crt_up = 5*mm;
+
+
 //
 // draw a transformer
 //
@@ -116,11 +128,6 @@ module toroid() {
 }
 
 
-case_wid = 12*mm;		/* X size */
-case_len = 12*mm;		/* Y size */
-case_hgt = 7*mm;			/* Z size */
-case_thk = 1.6;
-
 module case() {
 
      cube( [case_wid, case_len, 1]);
@@ -135,8 +142,6 @@ module case() {
 
 }
 
-
-crt_up = 5*mm;
 
 // small transformer params
 fil_a = 50;  fil_b = 21;  fil_c = 44;  fil_d = 71;  fil_h = 43;
