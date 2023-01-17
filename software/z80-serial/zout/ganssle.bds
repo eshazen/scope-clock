@@ -1,0 +1,231 @@
+binary-debuggable-source
+0000 0000 f ganssle.asm
+0100 0100 s 	org	100h
+0100 0100 s 
+0100 0100 s 
+0100 0100 s ;;; temporary equates
+0100 0100 s serial_port:	equ 10h
+0100 0100 s serial_low:	equ 11h
+0100 0100 s serial_high:	equ 12h
+0100 0100 s data_bit:	equ	80h
+0100 0100 s 	
+0100 0100 d 00
+0100 0100 s halfbt:	db	0
+0101 0101 d 00
+0101 0101 s bittim:	db	0
+0102 0102 s 
+0102 0102 s 	;;
+0102 0102 s 	;;   BRID - Determine the baud rate of the terminal. This routine
+0102 0102 s 	;;  actually finds the proper divisors BITTIM and HALFBT to run CIN
+0102 0102 s 	;;  and COUT properly.
+0102 0102 s 	;;
+0102 0102 s 	;;    The routine expects a space. It looks at the 6 zeroes in the
+0102 0102 s 	;;  20h stream from the serial port and counts time from the start
+0102 0102 s 	;;  bit to the first 1.
+0102 0102 s 	;;
+0102 0102 s 	;;   serial_port is the port address of the input data. data_bit
+0102 0102 s 	;;  is the bit mask.
+0102 0102 s 	;;
+0102 0102 s brid:
+0102 0102 d db10
+0102 0102 s 	in	a,(serial_port)
+0104 0104 d e680
+0104 0104 s 	and	data_bit
+0106 0106 d ca0201
+0106 0106 s 	jp	z,brid		; loop till serial not busy
+0109 0109 d db10
+0109 0109 s bri1:		in	a,(serial_port)
+010b 010b d e680
+010b 010b s 	and	data_bit
+010d 010d d c20901
+010d 010d s 	jp	nz,bri1 	; loop till start bit comes
+0110 0110 d 21f9ff
+0110 0110 s 	ld	hl,-7		; bit count
+0113 0113 d 1e03
+0113 0113 s bri3:		ld	e,3
+0115 0115 d 1d
+0115 0115 s bri4:		dec	e	; 42 machine cycle loop
+0116 0116 d c21501
+0116 0116 s 	jp	nz,bri4
+0119 0119 d 00
+0119 0119 s 	nop			; balance cycle counts
+011a 011a d 23
+011a 011a s 	inc	hl		; inc counter every 98 cycles
+011b 011b s 	;;  while serial line is low
+011b 011b d db10
+011b 011b s 	in	a,(serial_port)
+011d 011d d e680
+011d 011d s 	and	data_bit
+011f 011f d ca1301
+011f 011f s 	jp	z,bri3		; loop while serial line low
+0122 0122 d e5
+0122 0122 s 	push	hl		; save count for halfbt computation
+0123 0123 d 24
+0123 0123 s 	inc	h
+0124 0124 d 2c
+0124 0124 s 	inc	l		; add 101h w/o doing internal carry
+0125 0125 d 220101
+0125 0125 s 	ld	(bittim),hl	; save bit time
+0128 0128 d e1
+0128 0128 s 	pop	hl		; restore count
+0129 0129 d b7
+0129 0129 s 	or	a		; clear carry
+012a 012a d 7c
+012a 012a s 	ld	a,h		; compute hl/2
+012b 012b d 1f
+012b 012b s 	rra
+012c 012c d 67
+012c 012c s 	ld	h,a
+012d 012d d 7d
+012d 012d s 	ld	a,l
+012e 012e d 1f
+012e 012e s 	rra
+012f 012f d 6f
+012f 012f s 	ld	l,a		; hl=count/2
+0130 0130 d 220001
+0130 0130 s 	ld	(halfbt),hl
+0133 0133 d c9
+0133 0133 s 	ret
+0134 0134 s 
+0134 0134 s 	;;
+0134 0134 s 	;;  Output the character in C
+0134 0134 s 	;;
+0134 0134 s 	;;   Bittime has the delay time per bit, and is computed as:
+0134 0134 s 	;;
+0134 0134 s 	;;   <HL>' = ((freq in Hz/baudrate) - 98 )/14
+0134 0134 s 	;;   BITTIM = <HL>'+101H  (with no internal carry prop between bytes)
+0134 0134 s 	;;
+0134 0134 s 	;;  and OUT to serial_high sets the serial line high; an OUT
+0134 0134 s 	;;  to serial_low sets it low, regardless of the contents set to the
+0134 0134 s 	;;  port.
+0134 0134 s 	;;
+0134 0134 d 060b
+0134 0134 s cout:		ld	b,11	; # bits to send
+0136 0136 s 	;;  (start, 8 data, 2 stop)
+0136 0136 d af
+0136 0136 s 	xor	a		; clear carry for start bit
+0137 0137 d d23f01
+0137 0137 s co1:		jp	nc,cc1	; if carry, will set line high
+013a 013a d d312
+013a 013a s 	out	(serial_high),a ; set serial line high
+013c 013c d c34401
+013c 013c s 	jp	cc2
+013f 013f d d311
+013f 013f s cc1:		out	(serial_low),a ; set serial line low
+0141 0141 d c34401
+0141 0141 s 	jp	cc2		       ; idle; balance # cycles with those
+0144 0144 s 	;;  from setting output high
+0144 0144 d 2a0101
+0144 0144 s cc2:		ld	hl,(bittim) ; time per bit
+0147 0147 d 2d
+0147 0147 s co2:		dec	l
+0148 0148 d c24701
+0148 0148 s 	jp	nz,co2		; idle for one bit time
+014b 014b d 25
+014b 014b s 	dec	h
+014c 014c d c24701
+014c 014c s 	jp	nz,co2		; idle for one bit time
+014f 014f d 37
+014f 014f s 	scf			; set carry high for next bit
+0150 0150 d 79
+0150 0150 s 	ld	a,c		; a=character
+0151 0151 d 1f
+0151 0151 s 	rra			; shift it into the carry
+0152 0152 d 4f
+0152 0152 s 	ld	c,a
+0153 0153 d 05
+0153 0153 s 	dec	b		; --bit count
+0154 0154 d c23701
+0154 0154 s 	jp	nz,co1		; send entire character
+0157 0157 d c9
+0157 0157 s 	ret
+0158 0158 s 
+0158 0158 s 
+0158 0158 s 	;;
+0158 0158 s 	;;   CIN - input a character to C.
+0158 0158 s 	;;
+0158 0158 s 	;;   HALFBT is the time for a half bit transition on the serial input
+0158 0158 s 	;;  line. It is calculated as follows:
+0158 0158 s 	;;    (BITTIM-101h)/2 +101h
+0158 0158 s 	;;
+0158 0158 d 0609
+0158 0158 s cin:		ld	b,9	; bit count (start + 8 data)
+015a 015a d db10
+015a 015a s ci1:		in	a,(serial_port) ; read serial line
+015c 015c d e680
+015c 015c s 	and	data_bit		; isolate serial bit
+015e 015e d c25a01
+015e 015e s 	jp	nz,ci1			; wait till serial data comes
+0161 0161 d 2a0001
+0161 0161 s 	ld	hl,(halfbt)		; get 1/2 bit time
+0164 0164 d 2d
+0164 0164 s ci2:		dec	l
+0165 0165 d c26401
+0165 0165 s 	jp	nz,ci2		; wait till middle of start bit
+0168 0168 d 25
+0168 0168 s 	dec	h
+0169 0169 d c26401
+0169 0169 s 	jp	nz,ci2
+016c 016c d 2a0101
+016c 016c s ci3:		ld	hl,(bittim) ; bit time
+016f 016f d 2d
+016f 016f s ci4:		dec	l
+0170 0170 d c26f01
+0170 0170 s 	jp	nz,ci4		; now wait one entire bit time
+0173 0173 d 25
+0173 0173 s 	dec	h
+0174 0174 d c26f01
+0174 0174 s 	jp	nz,ci4
+0177 0177 d db10
+0177 0177 s 	in	a,(serial_port) ; read serial character
+0179 0179 d e680
+0179 0179 s 	and	data_bit	; isolate serial data
+017b 017b d ca7f01
+017b 017b s 	jp	z,ci6		; j if data is 0
+017e 017e d 3c
+017e 017e s 	inc	a		; now register A=serial data
+017f 017f s ci6:
+017f 017f d 1f
+017f 017f s 	rra		; rotate it into carry
+0180 0180 d 05
+0180 0180 s 	dec	b		; dec bit count
+0181 0181 d ca8b01
+0181 0181 s 	jp	z,ci5		; j if last bit
+0184 0184 d 79
+0184 0184 s 	ld	a,c		; this is where we assemble char
+0185 0185 d 1f
+0185 0185 s 	rra			; rotate it into the character from carry
+0186 0186 d 4f
+0186 0186 s 	ld	c,a
+0187 0187 d 00
+0187 0187 s 	nop			; delay so timing matches that in output
+0188 0188 s 	;;  routine
+0188 0188 d c36c01
+0188 0188 s 	jp	ci3		; do next bit
+018b 018b s ci5:
+018b 018b d c9
+018b 018b s 	ret
+018c 018c s 
+018c 018c s 	
+013f a cc1
+0144 a cc2
+015a a ci1
+0164 a ci2
+016c a ci3
+016f a ci4
+018b a ci5
+017f a ci6
+0137 a co1
+0147 a co2
+0158 a cin
+0109 a bri1
+0113 a bri3
+0115 a bri4
+0102 a brid
+0134 a cout
+0100 a halfbt
+0101 a bittim
+0080 v data_bit
+0011 v serial_low
+0012 v serial_high
+0010 v serial_port
