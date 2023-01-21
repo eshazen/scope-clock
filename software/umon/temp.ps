@@ -1,0 +1,3000 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 18 36 594 756
+%%Title: Enscript Output
+%%Creator: GNU Enscript 1.6.5.90
+%%CreationDate: Sat Jan 21 09:09:07 2023
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6.5 90
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6.5 90
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 9 9 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6.5 90
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 720 def
+/d_page_h 576 def
+/d_header_x 0 def
+/d_header_y 561 def
+/d_header_w 720 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 720 def
+/d_footer_h 0 def
+/d_output_w 720 def
+/d_output_h 561 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 1 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(;;;                                                             ;;;) s
+5 539 M
+(;;; simple Z80 monitor                                          ;;; simple Z80 monitor) s
+5 529 M
+(;;;                                                             ;;;) s
+5 519 M
+(                                                              > ;;; h                          print help) s
+5 509 M
+(;;; d <addr> <count>           dump memory                      ;;; d <addr> <count>           dump memory) s
+5 499 M
+(;;; e <addr> <dd> <dd>...      edit up to 16 bytes in memory    ;;; e <addr> <dd> <dd>...      edit up to 16 bytes in memory) s
+5 489 M
+(;;; o <port> <val>             output <val> to <port>           ;;; o <port> <val>             output <val> to <port>) s
+5 479 M
+(;;; z <val>                    set port zero value bits 0-6   <) s
+5 469 M
+(;;; i <port>                   input from <port> and display    ;;; i <port>                   input from <port> and display) s
+5 459 M
+(;;; g <addr>                   goto addr                      | ;;; g <addr>                   goto address \(restore regs\)) s
+5 449 M
+(;;; b <addr>                   set breakpoint \(currently 3-by   ;;; b <addr>                   set breakpoint \(currently 3-by) s
+5 439 M
+(;;; a <val1> <val2>            hex Arithmetic                   ;;; a <val1> <val2>            hex Arithmetic) s
+5 429 M
+(;;; f <addr>                   dump HP registers from <addr>  <) s
+5 419 M
+(;;; c                          continue from breakpoint         ;;; c                          continue from breakpoint) s
+5 409 M
+(;;; c <addr>                   continue, set new breakpoint     ;;; c <addr>                   continue, set new breakpoint) s
+5 399 M
+(;;; m <start> <end> <size>     memory region compare            ;;; m <start> <end> <size>     memory region compare) s
+5 389 M
+(;;; p <start> <end> <size>     memory region copy               ;;; p <start> <end> <size>     memory region copy) s
+5 379 M
+(;;; l                          binary load                      ;;; l                          binary load) s
+5 369 M
+(;;; r                          repeat last command            | ;;; f <n>                      restore regs, call function <n) s
+5 359 M
+(;;; calculator hardware                                       | ;;; r                          display stored regs) s
+5 349 M
+(;;; k                          scan keyboard                  | ;;; r <reg> <val>              edit stored regs) s
+5 339 M
+(;;; 7 <addr>                   update 7-segment display from  | ;;; x <lba_h> <lba_l> <addr>   read sector) s
+5 329 M
+(;;; V <addr>                   update VFD display from <addr> | ;;; y <lba_h> <lba_l> <addr>   write sector) s
+5 319 M
+(                                                              | ;;; w <start> <size> <patt>    zero or pattern-fill memory \(s) s
+5 309 M
+(                                                              > ;;;) s
+5 299 M
+(                                                              > ;;; gs [<lba_h> <lba_l> <addr> <count>]  GETSYS load CP/M) s
+5 289 M
+(                                                              > ;;;                            defaults to 0 0 E000 40) s
+5 279 M
+(                                                              >         ) s
+5 269 M
+(                                                              >         extern  sec128          ;use 128 byte disk sectors) s
+5 249 M
+(;       org     08100H                                          ;       org     08100H) s
+5 239 M
+(        org     UMON_ORIGIN                                             org     UMON_ORIGIN     ) s
+5 219 M
+(                                                              > ;;; -------------------- CP/M parameters --------------------) s
+5 209 M
+(                                                              > ;;; \(currently used only for GS command\)) s
+5 199 M
+(                                                              > MEM     EQU     63              ;63K to match cbios_hd) s
+5 189 M
+(                                                              >         ) s
+5 179 M
+(                                                              > ccp:    equ     \(MEM-7\)*1024) s
+5 169 M
+(                                                              > bdos:   equ     ccp+0806h) s
+5 159 M
+(                                                              > bios:   equ     ccp+1600h) s
+5 149 M
+(                                                              >) s
+5 139 M
+(                                                              > nsect:  equ     40h             ;sectors to load) s
+5 129 M
+(                                                              > ;;; ---------------------------------------------------------) s
+5 119 M
+(                                                              >) s
+5 109 M
+(stak:   equ     $               ;stack grows down from start    stak:   equ     $               ;stack grows down from start) s
+5 89 M
+(;;; jump table for useful entry points                          ;;; jump table for useful entry points) s
+5 79 M
+(        jmp     main            ;0000  cold start             | jump_table:     ) s
+5 69 M
+(        jmp     savestate       ;0003  save state \(breakpoint |         ;;                    fn_no   offset    description) s
+5 59 M
+(        jmp     getc            ;0006  read serial input to A |         jmp     main            ;00   0000      cold start) s
+5 49 M
+(        jmp     putc            ;0009  output serial from A   |         jmp     save_state      ;01   0003      save state \(b) s
+5 39 M
+(        jmp     crlf            ;000c  output CR/LF           |         jmp     getc            ;02   0006      read serial i) s
+5 29 M
+(        jmp     puts            ;000f  output string from HL  |         jmp     putc            ;03   0009      output serial) s
+5 19 M
+(        jmp     phex2           ;0012  output hex byte from A |         jmp     crlf            ;04   000c      output CR/LF) s
+5 9 M
+(        jmp     phex4           ;0015  output hex word from H |         jmp     puts            ;05   000f      output string) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 2 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >         jmp     phex2           ;06   0012      output hex by) s
+5 539 M
+(                                                              >         jmp     phex4           ;07   0015      output hex wo) s
+5 529 M
+(                                                              >) s
+5 519 M
+(                                                              >         jmp IDE_Initialize      ;08   0018      setup PPI, re) s
+5 509 M
+(                                                              >         jmp IDE_Byte_Read       ;09   001b      read byte fro) s
+5 499 M
+(                                                              >         jmp IDE_Word_Read       ;0a   001e      read word fro) s
+5 489 M
+(                                                              >         jmp IDE_Byte_Write      ;0b   0021      write data in) s
+5 479 M
+(                                                              >         jmp IDE_Word_Write      ;0c   0024      write data in) s
+5 469 M
+(                                                              >         jmp IDE_Get_Status      ;0d   0027      read status r) s
+5 459 M
+(                                                              >         jmp IDE_Wait_Ready      ;0e   002a      wait for busy) s
+5 449 M
+(                                                              >         jmp IDE_Wait_DRQ        ;0f   002d      wait for DRQ=) s
+5 439 M
+(                                                              >         jmp IDE_Do_Cmd          ;10   0030      issue a comma) s
+5 429 M
+(                                                              >         jmp IDE_Setup_LBA       ;11   0033      set LBA from ) s
+5 419 M
+(                                                              >         jmp IDE_Read_ID         ;12   0036      Read 512 byte) s
+5 409 M
+(                                                              >         jmp IDE_Read_Sector     ;13   0039      Read sector f) s
+5 399 M
+(                                                              >         jmp IDE_Write_Sector    ;14   003c      Write sector ) s
+5 379 M
+(;;; ---- data area ----                                         ;;; ---- data area ----) s
+5 359 M
+(;;; save CPU state coming from extrnal prog                     ;;; save CPU state coming from extrnal prog) s
+5 349 M
+(savein: db      0,0,0           ;instruction overwritten by b   savein: db      0,0,0           ;instruction overwritten by b) s
+5 339 M
+(savead: dw      0               ;address of breakpoint          savead: dw      0               ;address of breakpoint) s
+5 329 M
+(savsp:  dw      0               ;caller's stack pointer       | savesp: dw      0               ;caller's stack pointer) s
+5 309 M
+(;;; saved registers                                             ;;; saved registers) s
+5 299 M
+(saviy:  dw      0                                               saviy:  dw      0) s
+5 289 M
+(savix:  dw      0                                               savix:  dw      0) s
+5 269 M
+(savhlp: dw      0                                               savhlp: dw      0) s
+5 259 M
+(savdep: dw      0                                               savdep: dw      0) s
+5 249 M
+(savbcp: dw      0                                               savbcp: dw      0) s
+5 239 M
+(savafp: dw      0                                               savafp: dw      0) s
+5 229 M
+(                                                                        ) s
+5 219 M
+(savhl:  dw      0                                               savhl:  dw      0) s
+5 209 M
+(savde:  dw      0                                               savde:  dw      0) s
+5 199 M
+(savbc:  dw      0                                               savbc:  dw      0) s
+5 189 M
+(savaf:  dw      0                                               savaf:  dw      0) s
+5 179 M
+(                                                                        ) s
+5 169 M
+(savetop: equ    $                                               savetop: equ    $) s
+5 159 M
+(                                                                        ) s
+5 149 M
+(regnam: db      'HL', 0, 'DE', 0, 'BC', 0, 'AF', 0            <) s
+5 139 M
+(                                                              <) s
+5 129 M
+(pzero:  db      0               ;port 0 value bits 0-6        <) s
+5 119 M
+(lastc:  db      0               ;last command byte              lastc:  db      0               ;last command byte) s
+5 99 M
+(buff:   rept    60                                            <) s
+5 89 M
+(        db      0                                             <) s
+5 79 M
+(        endm                                                  <) s
+5 69 M
+(                                                              <) s
+5 59 M
+(bend:   equ     $               ;mark the end                 <) s
+5 49 M
+(                                                              <) s
+5 39 M
+(maxarg: equ     18              ;maximum number of arguments    maxarg: equ     18              ;maximum number of arguments) s
+5 29 M
+(argc:   db      0                                               argc:   db      0) s
+5 19 M
+(                                                                        ) s
+5 9 M
+(argv:   rept    maxarg*2                                        argv:   rept    maxarg*2) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 3 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(        dw      0                                                       dw      0) s
+5 539 M
+(        endm                                                            endm) s
+5 529 M
+(                                                                        ) s
+5 519 M
+(iargv:  rept    maxarg*2                                        iargv:  rept    maxarg*2) s
+5 509 M
+(        dw      0                                                       dw      0) s
+5 499 M
+(        endm                                                            endm) s
+5 479 M
+(;       INCLUDE "s1200.asm"                                   | secct:  db      0               ;sector count for getsys/puts) s
+5 469 M
+(        INCLUDE "s19200.asm"                                  | sadd:   dw      0               ;hex load sector count) s
+5 459 M
+(                                                              >) s
+5 449 M
+(                                                              >         INCLUDE "serial.asm") s
+5 439 M
+(        INCLUDE "console.asm"                                           INCLUDE "console.asm") s
+5 429 M
+(        INCLUDE "hex.asm"                                               INCLUDE "hex.asm") s
+5 419 M
+(        INCLUDE "strings.asm"                                           INCLUDE "strings.asm") s
+5 409 M
+(        INCLUDE "diskey.asm"                                  | ;       INCLUDE "c-link.asm") s
+5 399 M
+(        INCLUDE "c-link.asm"                                  |         INCLUDE "disk_ide.asm") s
+5 389 M
+(        INCLUDE "vfd.asm"                                     |         INCLUDE "disk_ide_extras.asm") s
+5 369 M
+(banner: db      "UMON v0.7 ORG ",0                            | banner: db      "UMON-P v0.8 ORG ",0) s
+5 359 M
+(error:  db      "ERROR",0                                       error:  db      "ERROR",0) s
+5 349 M
+(                                                              > secmsg: db      " SECTORS LOADED.  START=",0) s
+5 339 M
+(                                                                        ) s
+5 329 M
+(usage:  db      "h                     print this help", 13,    usage:  db      "h                     print this help", 13, ) s
+5 319 M
+(        db      "d <addr> <count", 13, 10                     <) s
+5 309 M
+(        db      "d <addr> <count>      dump memory", 13, 10             db      "d <addr> <count>      dump memory", 13, 10) s
+5 299 M
+(        db      "e <addr> <dd> <dd>... edit up to 16 bytes in           db      "e <addr> <dd> <dd>... edit up to 16 bytes in) s
+5 289 M
+(        db      "o <addr> <val>        output <val> to port <           db      "o <addr> <val>        output <val> to port <) s
+5 279 M
+(        db      "z <val>               set port zero value bi <) s
+5 269 M
+(        db      "i <addr>              input from <addr> and            db      "i <addr>              input from <addr> and ) s
+5 259 M
+(        db      "g <addr>              goto addr", 13, 10               db      "g <addr>              goto addr", 13, 10) s
+5 249 M
+(        db      "b <addr>              set breakpoint \(curren           db      "b <addr>              set breakpoint \(curren) s
+5 239 M
+(        db      "a <val1> <val2>       hex Arithmetic", 13, 1           db      "a <val1> <val2>       hex Arithmetic", 13, 1) s
+5 229 M
+(        db      "g <addr>              dump HP registers from <) s
+5 219 M
+(        db      "m <ad1> <ad2> <n>     memory compare", 13, 1           db      "m <ad1> <ad2> <n>     memory compare", 13, 1) s
+5 209 M
+(        db      "p <ad1> <ad2> <n>     memory copy", 13, 10             db      "p <ad1> <ad2> <n>     memory copy", 13, 10) s
+5 199 M
+(        db      "c                     continue from breakpoi           db      "c                     continue from breakpoi) s
+5 189 M
+(        db      "l                     binary load", 13, 10             db      "l                     binary load", 13, 10) s
+5 179 M
+(        db      "r                     repeat last command",  |         db      "f <n>                 call function", 13, 10) s
+5 169 M
+(        db      "k                     scan keyboard", 13, 10 |         db      "r [<reg> <val>]       display/edit regs",13,) s
+5 159 M
+(        db      "7 <addr>              update LED display fro |         db      "w <addr> <count> <p>  fill memory with wordz) s
+5 149 M
+(        db      "V <addr>              update VFD display \(0= |         db      "x <LH> <LL> <adr> [n] read disk sector\(s\)",1) s
+5 139 M
+(                                                              >         db      "y <LH> <LL> <adr> [n] write disk sector",13,) s
+5 129 M
+(                                                              >         db      "gs [<LH> <LL> <adr> n] get CP/M sectors",13,) s
+5 119 M
+(        db      0                                                       db      0) s
+5 99 M
+(main:   ld      sp,stak                                         main:   ld      sp,stak) s
+5 89 M
+(                                                              >         ;; set RC2014 memory map to all RAM) s
+5 79 M
+(                                                              >         out     \(30h\),a         ;reset memory page thing \(bac) s
+5 69 M
+(                                                              >         out     \(38h\),a         ;increment memory page thing ) s
+5 59 M
+(                                                              >         call    io_init) s
+5 49 M
+(        ld      hl,banner                                               ld      hl,banner) s
+5 39 M
+(        call    puts                                                    call    puts) s
+5 29 M
+(        ld      hl,stak                                                 ld      hl,stak) s
+5 19 M
+(        call    phex4                                                   call    phex4) s
+5 9 M
+(        call    space                                                   call    space) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 4 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (4) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(        ld      hl,umontop                                              ld      hl,umontop) s
+5 539 M
+(        call    phex4                                                   call    phex4) s
+5 529 M
+(        call    crlf                                                    call    crlf) s
+5 519 M
+(                                                                        ) s
+5 509 M
+(loop:   ld      a,'>'           ;prompt                         loop:   ld      a,'>'           ;prompt) s
+5 499 M
+(        call    putc                                                    call    putc) s
+5 479 M
+(        ld      hl,buff                                                 ld      hl,buff) s
+5 469 M
+(        ld      bc,bend-buff    ; maximum size                          ld      bc,bend-buff    ; maximum size) s
+5 459 M
+(        call    gets                                                    call    gets) s
+5 439 M
+(        ;; check for 'R'                                      | ;;; commands here which don't want tokenizer to be run) s
+5 429 M
+(        ld      a,\(buff\)                                      <) s
+5 419 M
+(        cp      a,'R'                                         <) s
+5 409 M
+(        jr      nz,not_r                                      <) s
+5 399 M
+(                                                              <) s
+5 389 M
+(        ;; restore last command byte                          <) s
+5 379 M
+(        ld      a,\(lastc\)                                     <) s
+5 369 M
+(        ld      \(buff\),a                                      <) s
+5 349 M
+(        ;; parse string into tokens at argc / argv            | ;;; parse string into tokens at argc / argv) s
+5 339 M
+(not_r:  ld      hl,buff                                       |         ld      hl,buff) s
+5 329 M
+(        ld      de,argv                                                 ld      de,argv) s
+5 319 M
+(        ld      b,maxarg                                                ld      b,maxarg) s
+5 309 M
+(        call    strtok                                                  call    strtok  ) s
+5 299 M
+(        ld      a,c                                                     ld      a,c) s
+5 289 M
+(        ld      \(argc\),a                                                ld      \(argc\),a) s
+5 269 M
+(        ;; convert tokens to integers                                   ;; convert tokens to integers) s
+5 259 M
+(        ld      hl,argv                                                 ld      hl,argv) s
+5 249 M
+(        ld      de,iargv                                                ld      de,iargv) s
+5 239 M
+(        ld      b,a                                                     ld      b,a) s
+5 229 M
+(        call    cvint                                                   call    cvint) s
+5 209 M
+(        ld      hl,buff         ;parse command character                ld      hl,buff         ;parse command character) s
+5 199 M
+(        ld      a,\(hl\)                                                  ld      a,\(hl\)) s
+5 189 M
+(        ld      \(lastc\),a       ;save for possible repeat               ld      \(lastc\),a       ;save for possible repeat) s
+5 169 M
+(        cp      a,'D'           ;dump memory                            cp      a,'D'           ;dump memory) s
+5 159 M
+(        jz      dump                                                    jz      dump) s
+5 139 M
+(        cp      a,'H'                                                   cp      a,'H') s
+5 129 M
+(        jz      help                                                    jz      help) s
+5 109 M
+(        cp      a,'F'                                         <) s
+5 99 M
+(        jz      hpdump                                        <) s
+5 89 M
+(                                                              <) s
+5 79 M
+(        cp      a,'A'                                                   cp      a,'A') s
+5 69 M
+(        jz      arith                                                   jz      arith) s
+5 49 M
+(        cp      a,'E'                                                   cp      a,'E') s
+5 39 M
+(        jz      edit                                                    jz      edit) s
+5 19 M
+(        cp      a,'B'                                                   cp      a,'B') s
+5 9 M
+(        jz      brkpt                                                   jz      brkpt) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 5 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (5) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 539 M
+(        cp      a,'C'                                                   cp      a,'C') s
+5 529 M
+(        jz      continu                                                 jz      continu) s
+5 509 M
+(        cp      a,'G'                                                   cp      a,'G') s
+5 499 M
+(        jz      goto                                          |         jz      cmd_g) s
+5 479 M
+(        cp      a,'L'                                                   cp      a,'L') s
+5 469 M
+(        jz      binary                                        |         jz      cmd_l) s
+5 459 M
+(                                                                        ) s
+5 449 M
+(        cp      a,'O'                                                   cp      a,'O') s
+5 439 M
+(        jz      output                                                  jz      output) s
+5 419 M
+(        cp      a,'I'                                                   cp      a,'I') s
+5 409 M
+(        jz      input                                                   jz      input) s
+5 389 M
+(        cp      a,'Z'                                         <) s
+5 379 M
+(        jz      zero                                          <) s
+5 369 M
+(                                                              <) s
+5 359 M
+(        cp      a,'K'                                         <) s
+5 349 M
+(        jz      kbtest                                        <) s
+5 339 M
+(                                                              <) s
+5 329 M
+(        cp      a,'7'                                         <) s
+5 319 M
+(        jz      dptest                                        <) s
+5 309 M
+(                                                              <) s
+5 299 M
+(        cp      a,'V'                                         <) s
+5 289 M
+(        jz      vfdtest                                       <) s
+5 279 M
+(                                                              <) s
+5 269 M
+(        cp      a,'M'                                                   cp      a,'M') s
+5 259 M
+(        jz      memcmp                                                  jz      memcmp) s
+5 239 M
+(        cp      a,'P'                                                   cp      a,'P') s
+5 229 M
+(        jz      memcpy                                                  jz      memcpy) s
+5 219 M
+(                                                              |) s
+5 209 M
+(                                                              >         cp      a,'R') s
+5 199 M
+(                                                              >         jz      edit_regs) s
+5 189 M
+(                                                              >) s
+5 179 M
+(                                                              >         cp      a,'F') s
+5 169 M
+(                                                              >         jz      call_func) s
+5 159 M
+(                                                              >) s
+5 149 M
+(                                                              >         cp      a,'X') s
+5 139 M
+(                                                              >         jz      read_sect) s
+5 129 M
+(                                                              >) s
+5 119 M
+(                                                              >         cp      a,'Y') s
+5 109 M
+(                                                              >         jz      writ_sect) s
+5 99 M
+(                                                              >) s
+5 89 M
+(                                                              >         cp      a,'W') s
+5 79 M
+(                                                              >         jz      memzer) s
+5 69 M
+(                                                              >) s
+5 59 M
+(errz:   ld      hl,error                                        errz:   ld      hl,error) s
+5 49 M
+(        call    puts                                                    call    puts) s
+5 39 M
+(        call    crlf                                                    call    crlf) s
+5 29 M
+(                                                                        ) s
+5 19 M
+(        jp      loop                                                    jp      loop) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 6 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (6) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(quit:   jp      0                                               quit:   jp      0) s
+5 529 M
+(kbtest: call    kbscan                                        | help:   ld      hl,usage) s
+5 519 M
+(        call    phex4                                         |         call    puts) s
+5 509 M
+(        call    crlf                                          <) s
+5 499 M
+(        jp      loop                                                    jp      loop) s
+5 479 M
+(dptest: ld      hl,\(iargv+2\)                                  | ;;; memory pattern/zero) s
+5 469 M
+(        call    display                                       | memzer:) s
+5 459 M
+(                                                              >         ld      hl,\(iargv+2\)    ;address) s
+5 449 M
+(                                                              >         ld      bc,\(iargv+4\)    ;count) s
+5 439 M
+(                                                              >         ld      de,\(iargv+6\)    ;pattern) s
+5 429 M
+(                                                              >         ;; check for letter 'P' for pattern) s
+5 419 M
+(                                                              >         ld      ix,\(argv+6\)     ;pointer to pattern) s
+5 409 M
+(                                                              >         ld      a,\(ix\)) s
+5 399 M
+(                                                              >         cp      a,'P') s
+5 389 M
+(                                                              >         jr      z,mempat) s
+5 379 M
+(                                                              >         ;; just fill with value in DE) s
+5 369 M
+(                                                              > memfil: push    hl              ;save start address) s
+5 359 M
+(                                                              >         ld      \(hl\),e          ;store 16-bit value in first ) s
+5 349 M
+(                                                              >         inc     hl) s
+5 339 M
+(                                                              >         ld      \(hl\),d) s
+5 329 M
+(                                                              >         inc     hl) s
+5 319 M
+(                                                              >         pop     de              ;restore start address) s
+5 309 M
+(                                                              >         ex      de,hl           ;now hl=start, de=next) s
+5 299 M
+(                                                              >         ldir) s
+5 289 M
+(        jp      loop                                                    jp      loop) s
+5 279 M
+(                                                              >         ) s
+5 269 M
+(                                                              >         ;; fill memory with counter value) s
+5 259 M
+(                                                              > mempat: ld      de,0) s
+5 249 M
+(                                                              > memp1:  ld      \(hl\),e) s
+5 239 M
+(                                                              >         inc     hl) s
+5 229 M
+(                                                              >         ld      \(hl\),d) s
+5 219 M
+(                                                              >         inc     hl) s
+5 209 M
+(                                                              >         inc     de) s
+5 199 M
+(                                                              >         dec     bc) s
+5 189 M
+(                                                              >         ld      a,b) s
+5 179 M
+(                                                              >         or      c) s
+5 169 M
+(                                                              >         jr      nz,memp1) s
+5 149 M
+(vfdtest: call   vfd_init        ;initialize \(and blank\) VFD d |         jp      loop) s
+5 139 M
+(        ld      hl,\(iargv+2\)    ;get address to display from  |         ) s
+5 129 M
+(        ld      a,h             ;check for zero \(blank\)       |         ) s
+5 119 M
+(        or      l                                             |) s
+5 109 M
+(        jp      z,loop          ;zero, leave display blanked  | ;;; write sector\(s\)) s
+5 99 M
+(                                                              > writ_sect:) s
+5 89 M
+(                                                              >         ld      a,\(argc\)) s
+5 79 M
+(                                                              >         ld      b,1             ;default count) s
+5 69 M
+(                                                              >         cp      4               ;count = 1) s
+5 59 M
+(                                                              >         jr      z,wsrun) s
+5 49 M
+(                                                              >         cp      5               ;count specified) s
+5 39 M
+(                                                              >         jp      nz,errz) s
+5 29 M
+(                                                              >         ld      a,\(iargv+8\)     ;count) s
+5 19 M
+(                                                              >         ld      b,a) s
+5 9 M
+(                                                              >) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 7 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (7) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >         ;; write B sectors, incrementing LBA in DEHL) s
+5 539 M
+(                                                              > wsrun:) s
+5 529 M
+(                                                              >         ld      de,\(iargv+2\)) s
+5 519 M
+(                                                              >         ld      hl,\(iargv+4\)) s
+5 509 M
+(                                                              >         ld      ix,\(iargv+6\)) s
+5 499 M
+(                                                              >         ) s
+5 489 M
+(                                                              > wsloup: ) s
+5 479 M
+(                                                              >         push    hl) s
+5 469 M
+(                                                              >         push    bc) s
+5 459 M
+(                                                              >         push    de) s
+5 449 M
+(                                                              >         ) s
+5 439 M
+(                                                              >         call    IDE_Write_Sector) s
+5 429 M
+(                                                              >         push    de              ;after call next locn is in D) s
+5 419 M
+(                                                              >         pop     ix              ;copy to IX) s
+5 409 M
+(                                                                        ) s
+5 399 M
+(        call    vfd_display     ;else update the display      |         pop     de) s
+5 389 M
+(                                                              >         pop     bc) s
+5 379 M
+(                                                              >         pop     hl) s
+5 369 M
+(                                                              >) s
+5 359 M
+(                                                              >         ;; increment lba) s
+5 349 M
+(                                                              >         ld      a,h             ;check for HL=FFFF) s
+5 339 M
+(                                                              >         and     l) s
+5 329 M
+(                                                              >         cp      0ffh) s
+5 319 M
+(                                                              >         inc     hl) s
+5 309 M
+(                                                              >         jr      nz,nolbcw) s
+5 299 M
+(                                                              >) s
+5 289 M
+(                                                              >         inc     de) s
+5 279 M
+(                                                              >) s
+5 269 M
+(                                                              >         ;; delay) s
+5 259 M
+(                                                              >         push    hl) s
+5 249 M
+(                                                              >         ld      hl,0) s
+5 239 M
+(                                                              > dilly:  dec     hl) s
+5 229 M
+(                                                              >         ld      a,h) s
+5 219 M
+(                                                              >         or      l) s
+5 209 M
+(                                                              >         jr      nz,dilly) s
+5 199 M
+(                                                              >         pop     hl) s
+5 189 M
+(                                                              >) s
+5 179 M
+(                                                              > nolbcw: djnz    wsloup) s
+5 169 M
+(                                                              >) s
+5 159 M
+(        jp      loop                                                    jp      loop) s
+5 139 M
+(;;; set port zero value                                       |         ) s
+5 129 M
+(zero:   ld      a,\(iargv+2\)                                   | ;;; read sector\(s\)) s
+5 119 M
+(        ld      \(pzero\),a                                     | read_sect:) s
+5 109 M
+(                                                              >         ld      a,\(argc\)) s
+5 99 M
+(                                                              >         ld      b,1             ;default count) s
+5 89 M
+(                                                              >         cp      4               ;count = 1) s
+5 79 M
+(                                                              >         jr      z,rsrun) s
+5 69 M
+(                                                              >         cp      5               ;count specified) s
+5 59 M
+(                                                              >         jp      nz,errz) s
+5 49 M
+(                                                              >         ld      a,\(iargv+8\)     ;count) s
+5 39 M
+(                                                              >         ld      b,a) s
+5 29 M
+(                                                              >) s
+5 19 M
+(                                                              >         ;; read B sectors, incrementing LBA in DEHL) s
+5 9 M
+(                                                              > rsrun:) s
+_R
+S
+%%Page: (8) 8
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 8 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (8) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >         ld      de,\(iargv+2\)) s
+5 539 M
+(                                                              >         ld      hl,\(iargv+4\)) s
+5 529 M
+(                                                              >         ld      ix,\(iargv+6\)) s
+5 519 M
+(                                                              >         ) s
+5 509 M
+(                                                              > rsloup: ) s
+5 499 M
+(                                                              >         push    hl) s
+5 489 M
+(                                                              >         push    bc) s
+5 479 M
+(                                                              >         push    de) s
+5 469 M
+(                                                              >         ) s
+5 459 M
+(                                                              >         call    IDE_Read_Sector) s
+5 449 M
+(                                                              >         push    de              ;after call next locn is in D) s
+5 439 M
+(                                                              >         pop     ix              ;copy to IX) s
+5 429 M
+(                                                              >         ) s
+5 419 M
+(                                                              >         pop     de) s
+5 409 M
+(                                                              >         pop     bc) s
+5 399 M
+(                                                              >         pop     hl) s
+5 389 M
+(                                                              >) s
+5 379 M
+(                                                              >         ;; increment lba) s
+5 369 M
+(                                                              >         ld      a,h             ;check for HL=FFFF) s
+5 359 M
+(                                                              >         and     l) s
+5 349 M
+(                                                              >         cp      0ffh) s
+5 339 M
+(                                                              >         inc     hl) s
+5 329 M
+(                                                              >         jr      nz,nolbcy) s
+5 319 M
+(                                                              >) s
+5 309 M
+(                                                              >         inc     de) s
+5 299 M
+(                                                              > nolbcy: djnz    rsloup) s
+5 289 M
+(                                                              >) s
+5 279 M
+(        jp      loop                                                    jp      loop) s
+5 259 M
+(;;; alternative subr to do this from outside                  | ;;; call function from jump table, first restoring regs) s
+5 249 M
+(setpzero: ld \(pzero\),a                                        | call_func:) s
+5 239 M
+(        ret                                                   |         ld      a,\(argc\)        ;check for value) s
+5 229 M
+(                                                              >         cp      2) s
+5 219 M
+(                                                              >         jp      nz,errz) s
+5 209 M
+(                                                              >         ld      hl,save_state   ;user returns to here) s
+5 199 M
+(                                                              >         push    hl) s
+5 189 M
+(                                                              >         ld      a,\(iargv+2\)     ;get function code) s
+5 179 M
+(                                                              >         ld      e,a             ;to DE) s
+5 169 M
+(                                                              >         ld      d,0) s
+5 159 M
+(                                                              >         ld      hl,jump_table) s
+5 149 M
+(                                                              >         add     hl,de           ;multiply by 3) s
+5 139 M
+(                                                              >         add     hl,de) s
+5 129 M
+(                                                              >         add     hl,de) s
+5 119 M
+(                                                              >         jp      gother          ;go restore state, call \(hl\)) s
+5 99 M
+(help:   ld      hl,usage                                      | ;;; edit/display registers in memory \(at 'saveiy'\)) s
+5 89 M
+(                                                              > ;;; no args = display all regs) s
+5 79 M
+(                                                              > ;;; first arg is register name:  AF, BC, DE, HL, A', B', D', ) s
+5 69 M
+(                                                              > ;;; second arg is 16-bit value) s
+5 59 M
+(                                                              > edit_regs:) s
+5 49 M
+(                                                              >         ld      a,\(argc\)        ;get for two args) s
+5 39 M
+(                                                              >         cp      3) s
+5 29 M
+(                                                              >         jp      nz,view_regs    ;nope, just display regs) s
+5 19 M
+(                                                              >         ;; search for register name as 2nd argument) s
+5 9 M
+(                                                              >         ld      hl,\(argv+2\)     ;pointer to register name fro) s
+_R
+S
+%%Page: (9) 9
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 9 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (9) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >         ld      d,\(hl\)          ;get first char) s
+5 539 M
+(                                                              >         inc     hl) s
+5 529 M
+(                                                              >         ld      e,\(hl\)        ;get 2nd char) s
+5 519 M
+(                                                              >         ld      hl,reg_names    ;list of names for compare) s
+5 509 M
+(                                                              >         ld      b,10            ;number of register name byte) s
+5 499 M
+(                                                              >         ) s
+5 489 M
+(                                                              >         ;; lookup 16-bit register name from list) s
+5 479 M
+(                                                              > regnam:) s
+5 469 M
+(                                                              >         ld      a,d             ;get first char) s
+5 459 M
+(                                                              >         cp      \(hl\)            ;compare it) s
+5 449 M
+(                                                              >         inc     hl              ;advance ptr \(no flags change) s
+5 439 M
+(                                                              >         jr      nz,regnm        ;didn't match) s
+5 429 M
+(                                                              >) s
+5 419 M
+(                                                              >         ld      a,e             ;get 2nd char) s
+5 409 M
+(                                                              >         cp      \(hl\)            ;compare) s
+5 399 M
+(                                                              >         inc     hl) s
+5 389 M
+(                                                              >         jr      z,regfound) s
+5 379 M
+(                                                              >         ) s
+5 369 M
+(                                                              > regnxt: djnz    regnam) s
+5 359 M
+(                                                              >         ) s
+5 349 M
+(                                                              >         jp      badreg) s
+5 339 M
+(                                                              >) s
+5 329 M
+(                                                              > regnm:  inc     hl              ;skip 2nd char) s
+5 319 M
+(                                                              >         jr      regnxt          ;go loop) s
+5 309 M
+(                                                              >) s
+5 299 M
+(                                                              >         ;; reg name not found) s
+5 289 M
+(                                                              >         ;; display it) s
+5 279 M
+(                                                              > badreg: ld      hl,badreg_msg) s
+5 269 M
+(        call    puts                                                    call    puts) s
+5 259 M
+(                                                              >         ld      hl,\(argv+2\)) s
+5 249 M
+(                                                              >         ld      a,'''') s
+5 239 M
+(                                                              >         call    putc) s
+5 229 M
+(                                                              >         ld      a,\(hl\)) s
+5 219 M
+(                                                              >         call    putc) s
+5 209 M
+(                                                              >         inc     hl) s
+5 199 M
+(                                                              >         ld      a,\(hl\)) s
+5 189 M
+(                                                              >         call    putc) s
+5 179 M
+(                                                              >         ld      a,'''') s
+5 169 M
+(                                                              >         call    putc) s
+5 159 M
+(                                                              >         call    crlf) s
+5 149 M
+(        jp      loop                                                    jp      loop) s
+5 129 M
+(                                                              > badreg_msg:     db 'BAD REG',13,10,0) s
+5 119 M
+(                                                              >) s
+5 109 M
+(                                                              > view_regs:) s
+5 99 M
+(                                                              >         call    display_regs) s
+5 89 M
+(                                                              >         jp      loop) s
+5 79 M
+(                                                              >) s
+5 69 M
+(                                                              > ;;; register name at HL-2 matches) s
+5 59 M
+(                                                              > regfound:       ) s
+5 49 M
+(                                                              >         dec     hl) s
+5 39 M
+(                                                              >         dec     hl) s
+5 29 M
+(                                                              >         or      a               ;clear CY) s
+5 19 M
+(                                                              >         ld      de,reg_names) s
+5 9 M
+(                                                              >         sbc     hl,de           ;now we have offset into regi) s
+_R
+S
+%%Page: (10) 10
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 10 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (10) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >         ld      de,saviy        ;offset by two since HL point) s
+5 539 M
+(                                                              >         add     hl,de           ;point to stored reg value) s
+5 529 M
+(                                                              >         ld      de,\(iargv+4\)    ;get new value) s
+5 519 M
+(                                                              >) s
+5 509 M
+(                                                              >         ld      \(hl\),e          ;change the stored value) s
+5 499 M
+(                                                              >         inc     hl) s
+5 489 M
+(                                                              >         ld      \(hl\),d) s
+5 479 M
+(                                                              >         ) s
+5 469 M
+(                                                              >         jp      loop) s
+5 459 M
+(                                                              >) s
+5 449 M
+(                                                              > reg_names:) s
+5 439 M
+(                                                              >         db      'IY', 'IX', 'H''', 'D''', 'B''', 'A''', 'HL',) s
+5 429 M
+(                                                              >) s
+5 419 M
+(;;; output to port                                              ;;; output to port) s
+5 409 M
+(output: ld      a,\(iargv+2\)                                     output: ld      a,\(iargv+2\)) s
+5 399 M
+(        ld      c,a                                                     ld      c,a) s
+5 389 M
+(        ld      a,\(iargv+4\)                                             ld      a,\(iargv+4\)) s
+5 379 M
+(        out     \(c\),a                                                   out     \(c\),a) s
+5 369 M
+(        jp      loop                                                    jp      loop) s
+5 349 M
+(;;; input from port                                             ;;; input from port) s
+5 339 M
+(input:  ld      a,\(iargv+2\)                                     input:  ld      a,\(iargv+2\)) s
+5 329 M
+(        ld      c,a                                                     ld      c,a) s
+5 319 M
+(        in      a,\(c\)                                                   in      a,\(c\)) s
+5 309 M
+(        call    phex2                                                   call    phex2) s
+5 299 M
+(        call    crlf                                                    call    crlf) s
+5 289 M
+(        jp      loop                                                    jp      loop) s
+5 269 M
+(        ;; continue after breakpoint                                    ;; continue after breakpoint) s
+5 259 M
+(        ;; check if there is one first                                  ;; check if there is one first) s
+5 249 M
+(        ;; clears breakpoint as part of the process                     ;; clears breakpoint as part of the process) s
+5 239 M
+(continu: ld     hl,\(savead\)                                     continu: ld     hl,\(savead\)) s
+5 229 M
+(        ld      a,l                                                     ld      a,l) s
+5 219 M
+(        or      h                                                       or      h) s
+5 209 M
+(        jp      z,nobrk         ;go if not set                          jp      z,nobrk         ;go if not set) s
+5 199 M
+(        ld      de,0                                                    ld      de,0) s
+5 189 M
+(        ld      \(savead\),de     ;mark as cleared                        ld      \(savead\),de     ;mark as cleared) s
+5 169 M
+(        ex      de,hl           ;address to HL                          ex      de,hl           ;address to HL) s
+5 159 M
+(                                                                        ) s
+5 149 M
+(        ;; first restore the instruction saved                          ;; first restore the instruction saved) s
+5 139 M
+(        ld      hl,savein                                               ld      hl,savein) s
+5 129 M
+(        ldi                                                             ldi) s
+5 119 M
+(        ldi                                                             ldi) s
+5 109 M
+(        ldi                                                             ldi) s
+5 89 M
+(        ;; optionally, set a new breakpoint                             ;; optionally, set a new breakpoint) s
+5 79 M
+(        ld      a,\(argc\)                                                ld      a,\(argc\)) s
+5 69 M
+(        cp      2                                                       cp      2) s
+5 59 M
+(        jr      nz,nonew                                      |         jr      nz,restore_state) s
+5 39 M
+(        ;; set new breakpoint                                           ;; set new breakpoint) s
+5 29 M
+(        ld      hl,\(iargv+2\)                                            ld      hl,\(iargv+2\)) s
+5 19 M
+(        call    brkat                                                   call    brkat) s
+5 9 M
+(                                                                        ) s
+_R
+S
+%%Page: (11) 11
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 11 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (11) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(        call    phex4                                                   call    phex4) s
+5 539 M
+(        ld      hl,msgset                                               ld      hl,msgset) s
+5 529 M
+(        call    puts                                                    call    puts) s
+5 509 M
+(        ;; restore the machine state                                    ;; restore the machine state) s
+5 499 M
+(nonew:  ld      sp,saviy                                      |         ;; restore stack from \(savesp\) and ret) s
+5 489 M
+(                                                              > restore_state:) s
+5 479 M
+(                                                              >         ld      sp,saviy) s
+5 459 M
+(        pop     iy                                                      pop     iy) s
+5 449 M
+(        pop     ix                                                      pop     ix) s
+5 429 M
+(        pop     hl                                                      pop     hl) s
+5 419 M
+(        pop     de                                                      pop     de) s
+5 409 M
+(        pop     bc                                                      pop     bc) s
+5 399 M
+(        pop     af                                                      pop     af) s
+5 389 M
+(        exx                                                             exx) s
+5 379 M
+(        ex      af,af'                                                  ex      af,af') s
+5 369 M
+(                                                                        ) s
+5 359 M
+(        pop     hl                                                      pop     hl) s
+5 349 M
+(        pop     de                                                      pop     de) s
+5 339 M
+(        pop     bc                                                      pop     bc) s
+5 329 M
+(        pop     af                                                      pop     af) s
+5 309 M
+(        ld      sp,\(savsp\)      ;get back caller's stack      |         ld      sp,\(savesp\)     ;get back caller's stack) s
+5 299 M
+(        ret                     ;should to back to BP locn              ret                     ;should to back to BP locn) s
+5 279 M
+(                                                                        ) s
+5 269 M
+(;;; set breakpoint                                              ;;; set breakpoint) s
+5 259 M
+(brkpt:  ld      a,\(argc\)                                        brkpt:  ld      a,\(argc\)) s
+5 249 M
+(        cp      2               ;single numeric argument?               cp      2               ;single numeric argument?) s
+5 239 M
+(        jr      z,brkset                                                jr      z,brkset) s
+5 219 M
+(        ;; clear breakpoint if set                                      ;; clear breakpoint if set) s
+5 209 M
+(brkclr: ld      hl,\(savead\)                                     brkclr: ld      hl,\(savead\)) s
+5 199 M
+(        ld      a,l                                                     ld      a,l) s
+5 189 M
+(        or      h                                                       or      h) s
+5 179 M
+(        jr      z,nobrk         ;go if not set                          jr      z,nobrk         ;go if not set) s
+5 159 M
+(        call    phex4                                                   call    phex4) s
+5 149 M
+(        ld      hl,msgclr                                               ld      hl,msgclr) s
+5 139 M
+(        call    puts                                                    call    puts) s
+5 119 M
+(        ld      hl,\(savead\)                                             ld      hl,\(savead\)) s
+5 109 M
+(        ex      de,hl                                                   ex      de,hl) s
+5 99 M
+(        ld      hl,savein                                               ld      hl,savein) s
+5 89 M
+(        ldi                                                             ldi) s
+5 79 M
+(        ldi                                                             ldi) s
+5 69 M
+(        ldi                                                             ldi) s
+5 49 M
+(        ld      hl,0                                                    ld      hl,0) s
+5 39 M
+(        ld      \(savead\),hl     ;erase saved address                    ld      \(savead\),hl     ;erase saved address) s
+5 19 M
+(        jp      loop                                                    jp      loop) s
+_R
+S
+%%Page: (12) 12
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 12 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (12) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(        ;; check for breakpoint already set                             ;; check for breakpoint already set) s
+5 539 M
+(brkset: ld      hl,\(savead\)                                     brkset: ld      hl,\(savead\)) s
+5 529 M
+(        ld      a,h                                                     ld      a,h) s
+5 519 M
+(        or      l                                                       or      l) s
+5 509 M
+(        jr      nz,brkovr       ;attempt to overwrite breakpo           jr      nz,brkovr       ;attempt to overwrite breakpo) s
+5 489 M
+(        ld      hl,\(iargv+2\)    ;breakpoint goes here                   ld      hl,\(iargv+2\)    ;breakpoint goes here) s
+5 479 M
+(        call    brkat                                                   call    brkat) s
+5 469 M
+(        call    phex4                                                   call    phex4) s
+5 459 M
+(        ld      hl,msgset                                               ld      hl,msgset) s
+5 449 M
+(        call    puts                                                    call    puts) s
+5 429 M
+(        jp      loop                                                    jp      loop) s
+5 409 M
+(brkat:                                                          brkat:  ) s
+5 399 M
+(        push    hl              ;save locn                              push    hl              ;save locn) s
+5 389 M
+(        ld      \(savead\),hl     ;set brkpt locn                         ld      \(savead\),hl     ;set brkpt locn) s
+5 379 M
+(        ld      de,savein       ;save area for 3-byte instruc           ld      de,savein       ;save area for 3-byte instruc) s
+5 369 M
+(        ldi                                                             ldi) s
+5 359 M
+(        ldi                                                             ldi) s
+5 349 M
+(        ldi                     ;copy 3 bytes                           ldi                     ;copy 3 bytes) s
+5 339 M
+(        pop     hl              ;get locn back                          pop     hl              ;get locn back) s
+5 329 M
+(        push    hl                                                      push    hl) s
+5 319 M
+(        ld      \(hl\),0cdh       ;CALL                                   ld      \(hl\),0cdh       ;CALL) s
+5 309 M
+(        inc     hl                                                      inc     hl) s
+5 299 M
+(        ld      de,savestate    ;target for call              |         ld      de,save_state   ;target for call) s
+5 289 M
+(        ld      \(hl\),e                                                  ld      \(hl\),e) s
+5 279 M
+(        inc     hl                                                      inc     hl) s
+5 269 M
+(        ld      \(hl\),d                                                  ld      \(hl\),d) s
+5 259 M
+(        pop     hl                                                      pop     hl) s
+5 249 M
+(        ret                                                             ret) s
+5 229 M
+(brkovr: ld      hl,msgovr                                       brkovr: ld      hl,msgovr) s
+5 219 M
+(        call    puts                                                    call    puts) s
+5 209 M
+(        jp      loop                                                    jp      loop) s
+5 189 M
+(nobrk:  ld      hl,msgno                                        nobrk:  ld      hl,msgno) s
+5 179 M
+(        call    puts                                                    call    puts) s
+5 169 M
+(        jp      loop                                                    jp      loop) s
+5 149 M
+(msgset: db      ' SET', 13, 10, 0                               msgset: db      ' SET', 13, 10, 0) s
+5 139 M
+(msgno:  db      'NO BKPT', 13, 10, 0                            msgno:  db      'NO BKPT', 13, 10, 0) s
+5 129 M
+(msgclr: db      ' CLEARED', 13, 10, 0                           msgclr: db      ' CLEARED', 13, 10, 0) s
+5 119 M
+(msgovr: db      'BKPT ALREADY SET CLEAR FIRST', 13, 10, 0       msgovr: db      'BKPT ALREADY SET CLEAR FIRST', 13, 10, 0) s
+5 89 M
+(                                                              >         ;; check for "LH" for hex) s
+5 79 M
+(                                                              > cmd_l:  inc     hl) s
+5 69 M
+(                                                              >         ld      a,\(hl\)) s
+5 59 M
+(                                                              >         cp      'H') s
+5 49 M
+(                                                              >         jr      nz,binary) s
+5 39 M
+(                                                              >) s
+5 29 M
+(                                                              > ;;; hex loader on SIO port B) s
+5 19 M
+(                                                              > line:   ld      a,'+') s
+5 9 M
+(                                                              > prom:   call    putc_B) s
+_R
+S
+%%Page: (13) 13
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 13 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (13) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >) s
+5 539 M
+(                                                              >         ld      hl,buff) s
+5 529 M
+(                                                              >         ld      bc,bend-buff) s
+5 519 M
+(                                                              >         call    gets_B) s
+5 509 M
+(                                                              >) s
+5 499 M
+(                                                              >         ld      hl,buff) s
+5 489 M
+(                                                              >         ld      a,\(hl\)) s
+5 479 M
+(                                                              >         cp      a,':') s
+5 469 M
+(                                                              >         jr      z,lode) s
+5 459 M
+(                                                              >         cp      a,'/') s
+5 449 M
+(                                                              >         jp      z,0) s
+5 439 M
+(                                                              >         jr      err) s
+5 429 M
+(                                                              >) s
+5 419 M
+(                                                              > lode:   inc     hl) s
+5 409 M
+(                                                              >         call    ghex2           ; get record size to A) s
+5 399 M
+(                                                              >         ld      b,a             ; size to b) s
+5 389 M
+(                                                              >         call    ghex4           ; get load address to DE) s
+5 379 M
+(                                                              >         ) s
+5 369 M
+(                                                              >         ;; if we don't have a load address, store it now at \() s
+5 359 M
+(                                                              >         ld      a,\(sadd\)) s
+5 349 M
+(                                                              >         or      a) s
+5 339 M
+(                                                              >         jr      nz,noja) s
+5 329 M
+(                                                              >         ld      a,\(sadd+1\)) s
+5 319 M
+(                                                              >         or      a) s
+5 309 M
+(                                                              >         jr      nz,noja) s
+5 299 M
+(                                                              >) s
+5 289 M
+(                                                              >         ld      \(sadd\),de) s
+5 279 M
+(                                                              >) s
+5 269 M
+(                                                              > noja:   call    ghex2           ; get record type to A) s
+5 259 M
+(                                                              >         or      a) s
+5 249 M
+(                                                              >         jr      z,datt          ; zero, get data) s
+5 239 M
+(                                                              >         dec     a) s
+5 229 M
+(                                                              >         jr      nz,line) s
+5 219 M
+(                                                              >         ;; type = 01, we're done) s
+5 209 M
+(                                                              >         ld      hl,\(sadd\)) s
+5 199 M
+(                                                              >) s
+5 189 M
+(                                                              >         call    phex4) s
+5 179 M
+(                                                              >         call    crlf) s
+5 169 M
+(                                                              >) s
+5 159 M
+(                                                              >         jp      main) s
+5 149 M
+(                                                              >) s
+5 139 M
+(                                                              > err:    ld      a,'#') s
+5 129 M
+(                                                              >         jr      prom) s
+5 119 M
+(                                                              >) s
+5 109 M
+(                                                              >         ;; parse and store data) s
+5 99 M
+(                                                              > datt:   call    ghex2) s
+5 89 M
+(                                                              >         ld      \(de\),a) s
+5 79 M
+(                                                              >         inc     de) s
+5 69 M
+(                                                              >         djnz    datt) s
+5 59 M
+(                                                              >         jr      line) s
+5 49 M
+(                                                              >) s
+5 39 M
+(                                                              >         ) s
+5 29 M
+(                                                              >) s
+5 19 M
+(;;; start binary loader                                         ;;; start binary loader) s
+5 9 M
+(;;; expect binary words \(LSB first\):                            ;;; expect binary words \(LSB first\):) s
+_R
+S
+%%Page: (14) 14
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 14 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (14) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(;;;    0x5791, <addr>, <count>                                  ;;;    0x5791, <addr>, <count>) s
+5 539 M
+(;;; then <count> data bytes                                     ;;; then <count> data bytes) s
+5 529 M
+(;;; does not jump after, just returns to prompt                 ;;; does not jump after, just returns to prompt) s
+5 519 M
+(;;; if header not seen after a few bytes, bail out              ;;; if header not seen after a few bytes, bail out) s
+5 509 M
+(;;;                                                             ;;;) s
+5 499 M
+(;;; echo back all received                                      ;;; echo back all received) s
+5 489 M
+(;;;                                                             ;;; ) s
+5 479 M
+(binary: ld      b,5             ;max bad bytes                  binary: ld      b,5             ;max bad bytes) s
+5 469 M
+(        ;; read chars until 5 received or 0x91 seen                     ;; read chars until 5 received or 0x91 seen) s
+5 459 M
+(bin1:   call    getc                                            bin1:   call    getc) s
+5 449 M
+(        call    putc                                                    call    putc) s
+5 439 M
+(        cp      0x91            ;first magic byte?                      cp      0x91            ;first magic byte?) s
+5 429 M
+(        jr      z,bin1a                                                 jr      z,bin1a) s
+5 419 M
+(        djnz    bin1                                                    djnz    bin1) s
+5 409 M
+(        jp      errz                                                    jp      errz) s
+5 399 M
+(                                                                        ) s
+5 389 M
+(        ;; read chars, skipping repeat 0x91, wait for 0x57              ;; read chars, skipping repeat 0x91, wait for 0x57) s
+5 379 M
+(bin1a:  call    getc                                            bin1a:  call    getc) s
+5 369 M
+(        call    putc                                                    call    putc) s
+5 359 M
+(        cp      0x91                                                    cp      0x91) s
+5 349 M
+(        jr      z,bin1a                                                 jr      z,bin1a) s
+5 339 M
+(        cp      0x57                                                    cp      0x57) s
+5 329 M
+(        jp      nz,errz                                                 jp      nz,errz) s
+5 319 M
+(                                                                        ) s
+5 309 M
+(        ;; get address to hl                                            ;; get address to hl) s
+5 299 M
+(        call    getc                                                    call    getc) s
+5 289 M
+(        call    putc                                                    call    putc) s
+5 279 M
+(        ld      l,a                                                     ld      l,a) s
+5 269 M
+(        call    getc                                                    call    getc) s
+5 259 M
+(        call    putc                                                    call    putc) s
+5 249 M
+(        ld      h,a                                                     ld      h,a) s
+5 239 M
+(        ld      \(iargv\),hl                                              ld      \(iargv\),hl) s
+5 229 M
+(        ;; get count to bc                                              ;; get count to bc) s
+5 219 M
+(        call    getc                                                    call    getc) s
+5 209 M
+(        call    putc                                                    call    putc) s
+5 199 M
+(        ld      c,a                                                     ld      c,a) s
+5 189 M
+(        call    getc                                                    call    getc) s
+5 179 M
+(        call    putc                                                    call    putc) s
+5 169 M
+(        ld      b,a                                                     ld      b,a) s
+5 159 M
+(        ld      \(iargv+2\),bc                                            ld      \(iargv+2\),bc) s
+5 149 M
+(        ;; read and store data                                          ;; read and store data) s
+5 139 M
+(bin2:   call    getc                                            bin2:   call    getc) s
+5 129 M
+(        call    putc                                                    call    putc) s
+5 119 M
+(        ld      \(hl\),a                                                  ld      \(hl\),a) s
+5 109 M
+(        inc     hl                                                      inc     hl) s
+5 99 M
+(        dec     bc                                                      dec     bc) s
+5 89 M
+(        ld      a,b                                                     ld      a,b) s
+5 79 M
+(        or      c                                                       or      c) s
+5 69 M
+(        jr      nz,bin2                                                 jr      nz,bin2) s
+5 49 M
+(        ;; leave addr, count in iargv+2, iargv+4                        ;; leave addr, count in iargv+2, iargv+4) s
+5 39 M
+(        ;; display them too                                             ;; display them too) s
+5 29 M
+(        ld      hl,\(iargv\)                                              ld      hl,\(iargv\)) s
+5 19 M
+(        call    phex4                                                   call    phex4) s
+5 9 M
+(        call    crlf                                                    call    crlf) s
+_R
+S
+%%Page: (15) 15
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 15 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (15) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(        ld      bc,\(iargv+2\)                                            ld      bc,\(iargv+2\)) s
+5 539 M
+(        add     hl,bc                                                   add     hl,bc) s
+5 529 M
+(        call    phex4                                                   call    phex4) s
+5 519 M
+(        call    crlf                                                    call    crlf) s
+5 509 M
+(        jp      loop                                                    jp      loop) s
+5 489 M
+(;;; jump to 1st arg                                           |) s
+5 479 M
+(goto:   cp      2                                             | ;;; check for "GS") s
+5 469 M
+(                                                              > cmd_g:  inc     hl) s
+5 459 M
+(                                                              >         ld      a,\(hl\)) s
+5 449 M
+(                                                              >         cp      'S') s
+5 439 M
+(                                                              >         jr      nz, goto) s
+5 429 M
+(                                                              >) s
+5 419 M
+(                                                              > ;;; GETSYS) s
+5 409 M
+(                                                              > ;;; either zero or four arguments) s
+5 399 M
+(                                                              >         ld      a,\(argc\)) s
+5 389 M
+(                                                              >         cp      5               ; all arguments specified?) s
+5 379 M
+(                                                              >         jr      z,gsall) s
+5 369 M
+(                                                              >         ;; set defaults) s
+5 359 M
+(                                                              >         ld      de,0) s
+5 349 M
+(                                                              >         ld      hl,0) s
+5 339 M
+(                                                              >         ld      iy,ccp) s
+5 329 M
+(                                                              >         ld      a,nsect         ;default sector count) s
+5 319 M
+(                                                              >         ld      \(secct\),a) s
+5 309 M
+(                                                              >         ) s
+5 299 M
+(                                                              >         jr      getsys) s
+5 289 M
+(                                                              > ;;; ) s
+5 279 M
+(                                                              > gsall:  ) s
+5 269 M
+(                                                              >         ;; read B sectors, incrementing LBA in DEHL) s
+5 259 M
+(                                                              >         ld      de,\(iargv+2\)) s
+5 249 M
+(                                                              >         ld      hl,\(iargv+4\)) s
+5 239 M
+(                                                              >         ld      iy,\(iargv+6\)) s
+5 229 M
+(                                                              >         ld      a,\(iargv+8\)     ;count) s
+5 219 M
+(                                                              >         ld      \(secct\),a) s
+5 209 M
+(                                                              >) s
+5 199 M
+(                                                              >         ;; load from lba=dehl \(secct\) sectors to iy) s
+5 189 M
+(                                                              > getsys:) s
+5 179 M
+(                                                              >         push    hl) s
+5 169 M
+(                                                              >         push    de) s
+5 159 M
+(                                                              >         ) s
+5 149 M
+(                                                              >         ld      ix,dskbuf) s
+5 139 M
+(                                                              >         call    IDE_Read_Sector) s
+5 129 M
+(                                                              >) s
+5 119 M
+(                                                              >         ;; copy 80h bytes from buff to IY, increment IY) s
+5 109 M
+(                                                              >         ld      hl,dskbuf       ;source for copy) s
+5 99 M
+(                                                              >         push    iy) s
+5 89 M
+(                                                              >         pop     de              ;dest for copy) s
+5 79 M
+(                                                              >         ld      bc,80h          ;count for copy) s
+5 69 M
+(                                                              >         add     iy,bc           ;nudge iy) s
+5 59 M
+(                                                              >         ldir                    ;do the copy) s
+5 49 M
+(                                                              >) s
+5 39 M
+(                                                              >         pop     de) s
+5 29 M
+(                                                              >         pop     hl) s
+5 19 M
+(                                                              >) s
+5 9 M
+(                                                              >         inc     hl) s
+_R
+S
+%%Page: (16) 16
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 16 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >         ) s
+5 539 M
+(                                                              >         ld      a,\(secct\)) s
+5 529 M
+(                                                              >         dec     a) s
+5 519 M
+(                                                              >         ld      \(secct\),a) s
+5 509 M
+(                                                              >) s
+5 499 M
+(                                                              >         jr      nz,getsys) s
+5 489 M
+(                                                              >) s
+5 479 M
+(                                                              >         ;; print message) s
+5 469 M
+(                                                              >         ld      a,nsect) s
+5 459 M
+(                                                              >         call    phex2) s
+5 449 M
+(                                                              >         ld      hl,secmsg) s
+5 439 M
+(                                                              >         call    puts) s
+5 429 M
+(                                                              >         ld      hl,bios) s
+5 419 M
+(                                                              >         call    phex4) s
+5 409 M
+(                                                              >         call    crlf) s
+5 399 M
+(                                                              >) s
+5 389 M
+(                                                              >         jp      main) s
+5 379 M
+(                                                              >         ) s
+5 369 M
+(                                                              >) s
+5 359 M
+(                                                              > ;;; jump to 1st arg     ) s
+5 349 M
+(                                                              > goto:   ld      a,\(argc\)) s
+5 339 M
+(                                                              >         cp      2) s
+5 329 M
+(        jp      c,errz                                                  jp      c,errz) s
+5 319 M
+(        ld      hl,\(iargv+2\)                                            ld      hl,\(iargv+2\)) s
+5 309 M
+(        jp      \(hl\)                                          |         ld      de,showstate) s
+5 299 M
+(                                                              >         ;; set up the stack:  first, a return address in case) s
+5 289 M
+(                                                              >         push    de) s
+5 279 M
+(                                                              >         ;; now the user specified address from the command li) s
+5 269 M
+(                                                              > gother: push    hl) s
+5 259 M
+(                                                              >         ld      \(savesp\),sp     ;save caller's stack pointer) s
+5 249 M
+(                                                              >         jp      restore_state) s
+5 229 M
+(;;; edit values into memory                                     ;;; edit values into memory) s
+5 219 M
+(edit:   ld      a,\(argc\)                                        edit:   ld      a,\(argc\)) s
+5 209 M
+(        cp      a,3             ;need at least 3 args                   cp      a,3             ;need at least 3 args) s
+5 199 M
+(        jp      c,errz                                                  jp      c,errz) s
+5 179 M
+(        sub     a,2                                                     sub     a,2) s
+5 169 M
+(        ld      b,a             ;count of bytes to store                ld      b,a             ;count of bytes to store) s
+5 149 M
+(        ld      hl,\(iargv+2\)    ;get address                            ld      hl,\(iargv+2\)    ;get address) s
+5 139 M
+(        ld      ix,iargv+4      ;pointer to first data item             ld      ix,iargv+4      ;pointer to first data item) s
+5 119 M
+(eloop:  ld      a,\(ix\)                                          eloop:  ld      a,\(ix\)) s
+5 109 M
+(        ld      \(hl\),a                                                  ld      \(hl\),a) s
+5 99 M
+(        inc     hl                                                      inc     hl) s
+5 89 M
+(        inc     ix                                                      inc     ix) s
+5 79 M
+(        inc     ix                                                      inc     ix) s
+5 69 M
+(        djnz    eloop                                                   djnz    eloop) s
+5 59 M
+(        jp      loop                                                    jp      loop) s
+5 39 M
+(;;; dump some memory                                            ;;; dump some memory) s
+5 29 M
+(dump:   ld      hl,\(iargv+2\)    ;first arg                    | dump:   ld      a,\(argc\)) s
+5 19 M
+(                                                              >         ld      b,0             ;default count = 0/100) s
+5 9 M
+(                                                              >         cp      a,3             ;) s
+_R
+S
+%%Page: (17) 17
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 17 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (17) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >         jr      c,dump1) s
+5 539 M
+(                                                              >) s
+5 529 M
+(                                                              >         ;; else > 1 arg, so count specified) s
+5 519 M
+(        ld      a,\(iargv+4\)     ;second arg                             ld      a,\(iargv+4\)     ;second arg) s
+5 509 M
+(                                                              >         ld      b,a) s
+5 499 M
+(                                                              >) s
+5 489 M
+(                                                              > dump1:  ld      hl,\(iargv+2\)    ;first arg) s
+5 479 M
+(                                                                        ) s
+5 469 M
+(        ld      b,a             ;count                        | dump0:  call    hdump) s
+5 459 M
+(        call    hdump                                         |) s
+5 449 M
+(                                                              >         ld      \(iargv+2\),hl    ;save addr after) s
+5 439 M
+(                                                              >) s
+5 429 M
+(        jp      loop                                                    jp      loop) s
+5 409 M
+(;;; hex dump B bytes from HL                                    ;;; hex dump B bytes from HL) s
+5 399 M
+(        ;; see if we need to print the address                          ;; see if we need to print the address) s
+5 389 M
+(        ;; either on 16-byte boundary, or first address                 ;; either on 16-byte boundary, or first address) s
+5 379 M
+(hdump:  call    haddr           ;always print first address   |         ;; each time we print the address, copy to IX for asc) s
+5 369 M
+(                                                              > hdump:  call    hex_addr        ;always print first address) s
+5 359 M
+(                                                              >         push    hl) s
+5 349 M
+(                                                              >         pop     ix              ;address to IX) s
+5 339 M
+(        jr      bite            ;skip the 16-byte test                  jr      bite            ;skip the 16-byte test) s
+5 319 M
+(hdump2: ld      a,l                                             hdump2: ld      a,l) s
+5 309 M
+(        and     0xf                                                     and     0xf) s
+5 299 M
+(        call    z,haddr                                       |         jr      nz,bite) s
+5 289 M
+(                                                              >) s
+5 279 M
+(                                                              >         call    hex_ascii) s
+5 259 M
+(bite:   ld      a,\(hl\)                                          bite:   ld      a,\(hl\)) s
+5 249 M
+(        inc     hl                                                      inc     hl) s
+5 239 M
+(        call    phex2                                                   call    phex2) s
+5 229 M
+(        call    space                                                   call    space) s
+5 209 M
+(noadr:  djnz    hdump2                                          noadr:  djnz    hdump2) s
+5 199 M
+(                                                              >) s
+5 189 M
+(        call    crlf                                                    call    crlf) s
+5 179 M
+(        ret                                                             ret) s
+5 159 M
+(                                                              > ;;; print 16 bytes ascii from IX) s
+5 149 M
+(                                                              > hex_ascii:) s
+5 139 M
+(                                                              >         call    space) s
+5 129 M
+(                                                              >         push    bc) s
+5 119 M
+(                                                              >         ld      b,10h) s
+5 109 M
+(                                                              > hexal:  ld      a,\(ix\)) s
+5 99 M
+(                                                              >         inc     ix) s
+5 89 M
+(                                                              >         cp      20h             ;control char?) s
+5 79 M
+(                                                              >         jr      c,hexdot        ;yes, print a dot) s
+5 69 M
+(                                                              >         cp      80h             ;high bit set?) s
+5 59 M
+(                                                              >         jr      c,hexput        ;no, print the char) s
+5 49 M
+(                                                              >         ) s
+5 39 M
+(                                                              > hexdot: ld      a,'.') s
+5 29 M
+(                                                              >) s
+5 19 M
+(                                                              > hexput: call    putc) s
+5 9 M
+(                                                              >         djnz    hexal) s
+_R
+S
+%%Page: (18) 18
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 18 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (18) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >         pop     bc) s
+5 539 M
+(                                                              >) s
+5 529 M
+(;;; print address in HL                                         ;;; print address in HL) s
+5 519 M
+(haddr:  push    hl                                            | hex_addr:) s
+5 509 M
+(                                                              >         push    hl) s
+5 499 M
+(        call    crlf                                                    call    crlf) s
+5 489 M
+(        call    phex4                                                   call    phex4) s
+5 479 M
+(        ld      a,':'                                                   ld      a,':') s
+5 469 M
+(        call    putc                                                    call    putc) s
+5 459 M
+(        call    space                                                   call    space) s
+5 449 M
+(        pop     hl                                                      pop     hl) s
+5 439 M
+(        ret                                                             ret) s
+5 419 M
+(;;; do hex arithmetic                                           ;;; do hex arithmetic) s
+5 409 M
+(arith:  ld      hl,\(iargv+2\)    ;first arg                      arith:  ld      hl,\(iargv+2\)    ;first arg) s
+5 399 M
+(        ld      de,\(iargv+4\)    ;second arg                             ld      de,\(iargv+4\)    ;second arg) s
+5 389 M
+(                                                                        ) s
+5 379 M
+(        add     hl,de                                                   add     hl,de) s
+5 369 M
+(        call    phex4                                                   call    phex4) s
+5 359 M
+(        call    space                                                   call    space) s
+5 349 M
+(        ld      hl,\(iargv+2\)    ;first arg                              ld      hl,\(iargv+2\)    ;first arg) s
+5 339 M
+(        ld      de,\(iargv+4\)    ;second arg                             ld      de,\(iargv+4\)    ;second arg) s
+5 329 M
+(        or      a               ;clear CY                               or      a               ;clear CY) s
+5 319 M
+(        sbc     hl,de                                                   sbc     hl,de) s
+5 309 M
+(        call    phex4                                                   call    phex4) s
+5 299 M
+(        call    crlf                                                    call    crlf) s
+5 289 M
+(        jp      loop                                                    jp      loop) s
+5 269 M
+(;;; HP calculator word size                                   <) s
+5 259 M
+(wsize:  equ     14                                            <) s
+5 249 M
+(;;; register names                                            <) s
+5 239 M
+(hpregs: db      "ABXYZT12", 0                                 <) s
+5 229 M
+(                                                              <) s
+5 219 M
+(;;; dump HP registers                                         <) s
+5 209 M
+(;;; all 14 nibbles:  A, B, X, Y, Z, T, M1, M2                 <) s
+5 199 M
+(hpdump: ld      hl,\(iargv+2\)    ;first arg                    <) s
+5 189 M
+(        ld      de,wsize                                      <) s
+5 179 M
+(        ld      ix,hpregs                                     <) s
+5 169 M
+(                                                              <) s
+5 159 M
+(hpd1:   ld      a,\(ix\)          ;get register name            <) s
+5 149 M
+(        inc     ix                                            <) s
+5 139 M
+(        or      a               ;Z=done                       <) s
+5 129 M
+(        jp      z,loop                                        <) s
+5 119 M
+(                                                              <) s
+5 109 M
+(        call    putc            ;display reg name             <) s
+5 99 M
+(        call    space           ;space                        <) s
+5 89 M
+(        call    hpreg           ;display reg                  <) s
+5 79 M
+(        jr      hpd1                                          <) s
+5 69 M
+(                                                              <) s
+5 59 M
+(;;; display HP register from \(HL\)                             <) s
+5 49 M
+(;;; de must be WSIZE \(14\)                                     <) s
+5 39 M
+(;;; save bc, advance HL past reg                              <) s
+5 29 M
+(hpreg:  push    hl                                            <) s
+5 19 M
+(        push    bc                                            <) s
+5 9 M
+(        ld      b,wsize                                       <) s
+_R
+S
+%%Page: (19) 19
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 19 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (19) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(        add     hl,de           ;point to next reg            <) s
+5 539 M
+(hpr1:   dec     hl                                            <) s
+5 529 M
+(        ld      a,\(hl\)                                        <) s
+5 519 M
+(        call    phex1                                         <) s
+5 509 M
+(        djnz    hpr1                                          <) s
+5 499 M
+(        pop     bc                                            <) s
+5 489 M
+(        pop     hl                                            <) s
+5 479 M
+(        add     hl,de                                         <) s
+5 469 M
+(        call    crlf                                          <) s
+5 459 M
+(        ret                                                   <) s
+5 449 M
+(                                                              <) s
+5 439 M
+(altban: db      "BREAK ",0                                      altban: db      "BREAK ",0      ) s
+5 419 M
+(;;; ---------- breakpoint entry ----------                      ;;; ---------- breakpoint entry ----------) s
+5 409 M
+(;;; Save machine state and display it                           ;;; Save machine state and display it) s
+5 399 M
+(;;; Restore code at breakpoint                                  ;;; Restore code at breakpoint) s
+5 389 M
+(;;; --------------------------------------                      ;;; --------------------------------------) s
+5 379 M
+(savestate:                                                    | save_state:     ) s
+5 369 M
+(        ;; get the return address and save it                           ;; get the return address and save it) s
+5 359 M
+(        ex      \(sp\),hl         ;return address to HL                   ex      \(sp\),hl         ;return address to HL) s
+5 349 M
+(        dec     hl                                                      dec     hl) s
+5 339 M
+(        dec     hl                                                      dec     hl) s
+5 329 M
+(        dec     hl              ;back up over breakpoint call           dec     hl              ;back up over breakpoint call) s
+5 319 M
+(        ex      \(sp\),hl         ;put back on caller's stack             ex      \(sp\),hl         ;put back on caller's stack) s
+5 309 M
+(        ld      \(savsp\),sp      ;save caller's SP             | showstate:      ) s
+5 299 M
+(                                                              >         ld      \(savesp\),sp     ;save caller's SP) s
+5 289 M
+(        ;; reset the stack to the save area                             ;; reset the stack to the save area) s
+5 279 M
+(        ld      sp,savetop                                              ld      sp,savetop) s
+5 269 M
+(        ;; save primary regs                                            ;; save primary regs) s
+5 259 M
+(        push    af                                                      push    af) s
+5 249 M
+(        push    bc                                                      push    bc) s
+5 239 M
+(        push    de                                                      push    de) s
+5 229 M
+(        push    hl                                                      push    hl) s
+5 219 M
+(        ;; save alternate regs                                          ;; save alternate regs) s
+5 209 M
+(        exx                                                             exx) s
+5 199 M
+(        ex      af,af'                                                  ex      af,af') s
+5 189 M
+(        push    af                                                      push    af) s
+5 179 M
+(        push    bc                                                      push    bc) s
+5 169 M
+(        push    de                                                      push    de) s
+5 159 M
+(        push    hl                                                      push    hl) s
+5 149 M
+(        ;; save IX, IY                                                  ;; save IX, IY) s
+5 139 M
+(        push    ix                                                      push    ix) s
+5 129 M
+(        push    iy                                                      push    iy) s
+5 119 M
+(                                                                        ) s
+5 109 M
+(;;; cold start with alternate banner, display struct address    ;;; cold start with alternate banner, display struct address) s
+5 99 M
+(        ld      sp,stak         ;restore UMON stack                     ld      sp,stak         ;restore UMON stack) s
+5 89 M
+(        ld      hl,altban                                               ld      hl,altban) s
+5 79 M
+(        call    puts                                                    call    puts) s
+5 69 M
+(        ;; display breakpoint location                                  ;; display breakpoint location) s
+5 59 M
+(        ld      hl,\(savead\)                                             ld      hl,\(savead\)) s
+5 49 M
+(        call    phex4                                                   call    phex4) s
+5 39 M
+(        call    crlf                                                    call    crlf) s
+5 29 M
+(        call    pstate          ;display regs from state      |         ) s
+5 19 M
+(                                                              >         call    display_regs            ;display regs from st) s
+5 9 M
+(        jp      loop                                                    jp      loop) s
+_R
+S
+%%Page: (20) 20
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 20 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (20) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                                        ) s
+5 539 M
+(;;; display machine state from stored values                    ;;; display machine state from stored values) s
+5 529 M
+(pstate:                                                       | display_regs:) s
+5 519 M
+(        ld      hl,\(savaf\)                                              ld      hl,\(savaf\)) s
+5 509 M
+(        ld      de,'AF'                                                 ld      de,'AF') s
+5 499 M
+(        call    pregn                                                   call    pregn) s
+5 479 M
+(        ld      hl,\(savbc\)                                              ld      hl,\(savbc\)) s
+5 469 M
+(        ld      de,'BC'                                                 ld      de,'BC') s
+5 459 M
+(        call    pregn                                                   call    pregn) s
+5 439 M
+(        ld      hl,\(savde\)                                              ld      hl,\(savde\)) s
+5 429 M
+(        ld      de,'DE'                                                 ld      de,'DE') s
+5 419 M
+(        call    pregn                                                   call    pregn) s
+5 399 M
+(        ld      hl,\(savhl\)                                              ld      hl,\(savhl\)) s
+5 389 M
+(        ld      de,'HL'                                                 ld      de,'HL') s
+5 379 M
+(        call    pregn                                                   call    pregn) s
+5 359 M
+(        call    crlf                                                    call    crlf) s
+5 339 M
+(        ;; alternate regs                                               ;; alternate regs) s
+5 329 M
+(        ld      hl,\(savafp\)                                             ld      hl,\(savafp\)) s
+5 319 M
+(        ld      de,'A'''                                                ld      de,'A''') s
+5 309 M
+(        call    pregn                                                   call    pregn) s
+5 289 M
+(        ld      hl,\(savbcp\)                                             ld      hl,\(savbcp\)) s
+5 279 M
+(        ld      de,'B'''                                                ld      de,'B''') s
+5 269 M
+(        call    pregn                                                   call    pregn) s
+5 249 M
+(        ld      hl,\(savdep\)                                             ld      hl,\(savdep\)) s
+5 239 M
+(        ld      de,'D'''                                                ld      de,'D''') s
+5 229 M
+(        call    pregn                                                   call    pregn) s
+5 209 M
+(        ld      hl,\(savhlp\)                                             ld      hl,\(savhlp\)) s
+5 199 M
+(        ld      de,'H'''                                                ld      de,'H''') s
+5 189 M
+(        call    pregn                                                   call    pregn) s
+5 179 M
+(        call    crlf                                                    call    crlf) s
+5 159 M
+(        ld      hl,\(savix\)                                              ld      hl,\(savix\)) s
+5 149 M
+(        ld      de,'IX'                                                 ld      de,'IX') s
+5 139 M
+(        call    pregn                                                   call    pregn) s
+5 119 M
+(        ld      hl,\(saviy\)                                              ld      hl,\(saviy\)) s
+5 109 M
+(        ld      de,'IY'                                                 ld      de,'IY') s
+5 99 M
+(        call    pregn                                                   call    pregn) s
+5 79 M
+(        ld      hl,\(savsp\)                                    |         ld      hl,\(savesp\)) s
+5 69 M
+(        ld      de,'SP'                                                 ld      de,'SP') s
+5 59 M
+(        call    pregn                                                   call    pregn) s
+5 49 M
+(                                                                        ) s
+5 39 M
+(        call    crlf                                                    call    crlf) s
+5 29 M
+(                                                              |) s
+5 19 M
+(        jp      loop                                          |         ex      af,af'          ;back to primary regs) s
+5 9 M
+(                                                              >         exx) s
+_R
+S
+%%Page: (21) 21
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 21 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (21) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 549 M
+(                                                              >) s
+5 539 M
+(                                                              >         ret) s
+5 529 M
+(                                                                        ) s
+5 519 M
+(;;; copy memory                                                 ;;; copy memory) s
+5 509 M
+(memcpy: call    load3w                                          memcpy: call    load3w) s
+5 499 M
+(        ldir                                                            ldir) s
+5 489 M
+(        jp      loop                                                    jp      loop) s
+5 469 M
+(;;; compare memory                                              ;;; compare memory) s
+5 459 M
+(;;; up to 16 errors then stop                                   ;;; up to 16 errors then stop) s
+5 449 M
+(memcmp: call    load3w                                          memcmp: call    load3w) s
+5 439 M
+(memcp1: ld      a,\(de\)                                          memcp1: ld      a,\(de\)) s
+5 429 M
+(        cp      a,\(hl\)                                                  cp      a,\(hl\)) s
+5 419 M
+(        jr      nz,nocmp                                                jr      nz,nocmp) s
+5 409 M
+(memnxt: inc     hl                                              memnxt: inc     hl) s
+5 399 M
+(        inc     de                                                      inc     de) s
+5 389 M
+(        dec     bc                                                      dec     bc) s
+5 379 M
+(        ld      a,b                                                     ld      a,b) s
+5 369 M
+(        or      c                                                       or      c) s
+5 359 M
+(        jr      nz,memcp1                                               jr      nz,memcp1) s
+5 349 M
+(        jp      loop                                                    jp      loop) s
+5 329 M
+(        ;; display memory mismatch                                      ;; display memory mismatch) s
+5 319 M
+(nocmp:  call    phex4           ;display hl                     nocmp:  call    phex4           ;display hl) s
+5 309 M
+(        call    space                                                   call    space) s
+5 299 M
+(        ld      a,\(hl\)                                                  ld      a,\(hl\)) s
+5 289 M
+(        call    phex2                                                   call    phex2) s
+5 279 M
+(        call    space                                                   call    space) s
+5 269 M
+(        ex      de,hl                                                   ex      de,hl) s
+5 259 M
+(        call    phex4           ;display hl                             call    phex4           ;display hl) s
+5 249 M
+(        call    space                                                   call    space) s
+5 239 M
+(        ld      a,\(hl\)                                                  ld      a,\(hl\)) s
+5 229 M
+(        call    phex2                                                   call    phex2) s
+5 219 M
+(        ex      de,hl                                                   ex      de,hl) s
+5 209 M
+(        call    crlf                                                    call    crlf) s
+5 199 M
+(        jr      memnxt                                                  jr      memnxt) s
+5 189 M
+(                                                                        ) s
+5 179 M
+(;;; load hl, de, bc from 3 arguments for compare/copy           ;;; load hl, de, bc from 3 arguments for compare/copy) s
+5 169 M
+(load3w: ld      hl,\(iargv+2\)    ;source                         load3w: ld      hl,\(iargv+2\)    ;source) s
+5 159 M
+(        ld      de,\(iargv+4\)    ;dest                                   ld      de,\(iargv+4\)    ;dest) s
+5 149 M
+(        ld      bc,\(iargv+6\)    ;count                                  ld      bc,\(iargv+6\)    ;count) s
+5 139 M
+(        ret                                                             ret) s
+5 119 M
+(;;; display reg name from de, value from hl                     ;;; display reg name from de, value from hl) s
+5 109 M
+(pregn:                                                          pregn:  ) s
+5 99 M
+(        call    space                                                   call    space) s
+5 89 M
+(        ld      a,e                                                     ld      a,e) s
+5 79 M
+(        call    putc                                                    call    putc) s
+5 69 M
+(        ld      a,d                                                     ld      a,d) s
+5 59 M
+(        call    putc                                                    call    putc) s
+5 49 M
+(        ld      a,':'                                                   ld      a,':') s
+5 39 M
+(        call    putc                                                    call    putc) s
+5 29 M
+(        call    phex4                                                   call    phex4) s
+5 19 M
+(        call    space                                                   call    space) s
+5 9 M
+(        ret                                                             ret) s
+_R
+S
+%%Page: (22) 22
+%%BeginPageSetup
+_S
+90 rotate
+36 -594 translate
+/pagenum 22 def
+/fname (diff.txt) def
+/fdir (.) def
+/ftail (diff.txt) def
+% User defined strings:
+/fmodstr (Sat Jan 21 09:08:03 2023) def
+/pagenumstr (22) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 539 M
+(                                                              | ;;; input buffer \(tokens zero-terminated after parsing\)) s
+5 529 M
+(                                                              > buff:   ds      100H) s
+5 519 M
+(                                                              > bend:   equ     $               ;mark the end) s
+5 509 M
+(                                                              >) s
+5 499 M
+(                                                              > dskbuf: ds      200H) s
+5 489 M
+(                                                              >) s
+5 479 M
+(umontop:        equ     $                                       umontop:        equ     $) s
+5 469 M
+(                                                                        ) s
+5 459 M
+(        .end                                                            .end) s
+_R
+S
+%%Trailer
+%%Pages: 22
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF
