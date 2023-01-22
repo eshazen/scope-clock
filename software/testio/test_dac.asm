@@ -1,9 +1,5 @@
 ;;;
-;;; test_uart.asm - try testing UART output
-;;; under bit-bang serial umon
-;;;
-;;; loop trying to send data to new UART
-;;; stop when input seen from bit-bang input
+;;; test_dac.asm - ramp the DACs
 ;;; 
 
 ;;; bits in keyboard latch (port 00)
@@ -29,7 +25,7 @@ data_bit:	equ	80H	;input data mask
 	xor	a
 	out	(0),a		;clear reset
 
-	ld	c,'A'		;output character
+	ld	bc,0		;DAC value
 
 check:
 	;; check for serial input low (character in progress)
@@ -37,21 +33,15 @@ check:
 	and	data_bit
 	jp	z,umon
 
-	;; output to UART
-	ld	a,KBQ_WR	;write mode, select=0
+	;; write to DAC X
+	ld	a,KBQ_WR	;write mode, sel=0
 	out	(0),a
-	ld	a,c		;get character
-	out	(40h),a		;output to UART
-
-	;; next character
-	inc	c
-	ld	a,c
-	and	7fh
-	or	20h		;make printable
-	ld	c,a
+	ld	a,c		;DAC value lo
+	out	(41h),a
+	;; <FIXME> not finished
 
 	;; delay a while
-	ld	de,2000h
+	ld	de,200h
 
 dilly:
 	;; first check UART
