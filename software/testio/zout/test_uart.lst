@@ -1,0 +1,95 @@
+   1:				;;;
+   2:				;;; test_uart.asm - try testing UART output
+   3:				;;; under bit-bang serial umon
+   4:				;;;
+   5:				;;; loop trying to send data to new UART
+   6:				;;; stop when input seen from bit-bang input
+   7:				;;; 
+   8:				
+   9:				;;; bits in keyboard latch (port 00)
+  10:     -	0001          	KBQ_WR:		equ	1	;select write mode
+  11:     -	0002          	KBQ_SEL:	equ	2	;device select
+  12:     -	0004          	KBQ_Z:		equ	4	;CRT Z enable
+  13:     -	0008          	KBQ_UART_RST:	equ	8	;UART reset
+  14:     -	0010          	KBQ_RTC_CE:	equ	10h	;RTC chip enable
+  15:     -	0080          	KBQ_SER_DAT:	equ	80h	;bit-bang serial out
+  16:				
+  17:     -	8100          	umon:	equ	8100h		;re-enter umon
+  18:				
+  19:     -	0080          	serial_port:	equ	80H	;input port
+  20:     -	0000          	led_port:	equ	0	;port 0 for LED/keyboard output
+  21:					
+  22:     -	0080          	data_bit:	equ	80H	;input data mask
+  23:				
+  24:     -	9000          		org	9000h		;above UMON
+  25:				
+  26:				;;; reset the UART
+  27:    0+7	9000  3E08    		ld	a,KBQ_UART_RST
+  28:    7+11	9002  D300    		out	(0),a		;assert reset
+  29:   18+4	9004  AF      		xor	a
+  30:   22+11	9005  D300    		out	(0),a		;clear reset
+  31:				
+  32:   33+7	9007  0E41    		ld	c,'A'		;output character
+  33:				
+  34:     -	9009          	check:
+  35:					;; check for serial input low (character in progress)
+  36:   40+11	9009  DB80    		in	a,(serial_port)
+  37:   51+7	900B  E680    		and	data_bit
+  38:   58+10	900D  CA0081  		jp	z,umon
+  39:				
+  40:					;; output to UART
+  41:   68+7	9010  3E01    		ld	a,KBQ_WR	;write mode, select=0
+  42:   75+11	9012  D300    		out	(0),a
+  43:   86+4	9014  79      		ld	a,c		;get character
+  44:   90+11	9015  D340    		out	(40h),a		;output to UART
+  45:				
+  46:					;; next character
+  47:  101+4	9017  0C      		inc	c
+  48:  105+4	9018  79      		ld	a,c
+  49:  109+7	9019  E67F    		and	7fh
+  50:  116+7	901B  F620    		or	20h		;make printable
+  51:  123+4	901D  4F      		ld	c,a
+  52:				
+  53:					;; delay a while
+  54:  127+10	901E  110020  		ld	de,2000h
+  55:				
+  56:     -	9021          	dilly:
+  57:					;; first check UART
+  58:  137+11	9021  DB80    		in	a,(serial_port)
+  59:  148+7	9023  E680    		and	data_bit
+  60:  155+10	9025  CA0081  		jp	z,umon
+  61:				
+  62:  165+6	9028  1B      		dec	de
+  63:  171+4	9029  7A      		ld	a,d
+  64:  175+4	902A  B3      		or	e
+  65:  179+7+5	902B  20F4    		jr	nz,dilly
+  66:				
+  67:  186+12	902D  18DA    		jr	check		;
+  68:				
+  69:     -	902F          		.end
+
+
+
+Statistics:
+
+     3	passes
+     0	jr promotions
+    12	symbols
+    47	bytes
+
+
+
+Symbol Table:
+
+check           9009     
+data_bit       =  80     
+dilly           9021     
+kbq_rtc_ce     =  10     
+kbq_sel        =   2     
+kbq_ser_dat    =  80     
+kbq_uart_rst   =   8     
+kbq_wr         =   1     
+kbq_z          =   4     
+led_port       =   0     
+serial_port    =  80     
+umon           =8100     

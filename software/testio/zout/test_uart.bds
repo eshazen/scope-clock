@@ -1,0 +1,109 @@
+binary-debuggable-source
+0000 0000 f test_uart.asm
+0000 0000 s ;;;
+0000 0000 s ;;; test_uart.asm - try testing UART output
+0000 0000 s ;;; under bit-bang serial umon
+0000 0000 s ;;;
+0000 0000 s ;;; loop trying to send data to new UART
+0000 0000 s ;;; stop when input seen from bit-bang input
+0000 0000 s ;;; 
+0000 0000 s 
+0000 0000 s ;;; bits in keyboard latch (port 00)
+0000 0000 s KBQ_WR:		equ	1	;select write mode
+0000 0000 s KBQ_SEL:	equ	2	;device select
+0000 0000 s KBQ_Z:		equ	4	;CRT Z enable
+0000 0000 s KBQ_UART_RST:	equ	8	;UART reset
+0000 0000 s KBQ_RTC_CE:	equ	10h	;RTC chip enable
+0000 0000 s KBQ_SER_DAT:	equ	80h	;bit-bang serial out
+0000 0000 s 
+0000 0000 s umon:	equ	8100h		;re-enter umon
+0000 0000 s 
+0000 0000 s serial_port:	equ	80H	;input port
+0000 0000 s led_port:	equ	0	;port 0 for LED/keyboard output
+0000 0000 s 	
+0000 0000 s data_bit:	equ	80H	;input data mask
+0000 0000 s 
+9000 9000 s 	org	9000h		;above UMON
+9000 9000 s 
+9000 9000 s ;;; reset the UART
+9000 9000 d 3e08
+9000 9000 s 	ld	a,KBQ_UART_RST
+9002 9002 d d300
+9002 9002 s 	out	(0),a		;assert reset
+9004 9004 d af
+9004 9004 s 	xor	a
+9005 9005 d d300
+9005 9005 s 	out	(0),a		;clear reset
+9007 9007 s 
+9007 9007 d 0e41
+9007 9007 s 	ld	c,'A'		;output character
+9009 9009 s 
+9009 9009 s check:
+9009 9009 s 	;; check for serial input low (character in progress)
+9009 9009 d db80
+9009 9009 s 	in	a,(serial_port)
+900b 900b d e680
+900b 900b s 	and	data_bit
+900d 900d d ca0081
+900d 900d s 	jp	z,umon
+9010 9010 s 
+9010 9010 s 	;; output to UART
+9010 9010 d 3e01
+9010 9010 s 	ld	a,KBQ_WR	;write mode, select=0
+9012 9012 d d300
+9012 9012 s 	out	(0),a
+9014 9014 d 79
+9014 9014 s 	ld	a,c		;get character
+9015 9015 d d340
+9015 9015 s 	out	(40h),a		;output to UART
+9017 9017 s 
+9017 9017 s 	;; next character
+9017 9017 d 0c
+9017 9017 s 	inc	c
+9018 9018 d 79
+9018 9018 s 	ld	a,c
+9019 9019 d e67f
+9019 9019 s 	and	7fh
+901b 901b d f620
+901b 901b s 	or	20h		;make printable
+901d 901d d 4f
+901d 901d s 	ld	c,a
+901e 901e s 
+901e 901e s 	;; delay a while
+901e 901e d 110020
+901e 901e s 	ld	de,2000h
+9021 9021 s 
+9021 9021 s dilly:
+9021 9021 s 	;; first check UART
+9021 9021 d db80
+9021 9021 s 	in	a,(serial_port)
+9023 9023 d e680
+9023 9023 s 	and	data_bit
+9025 9025 d ca0081
+9025 9025 s 	jp	z,umon
+9028 9028 s 
+9028 9028 d 1b
+9028 9028 s 	dec	de
+9029 9029 d 7a
+9029 9029 s 	ld	a,d
+902a 902a d b3
+902a 902a s 	or	e
+902b 902b d 20f4
+902b 902b s 	jr	nz,dilly
+902d 902d s 
+902d 902d d 18da
+902d 902d s 	jr	check		;
+902f 902f s 
+902f 902f s 	.end
+8100 v umon
+9009 a check
+0004 v kbq_z
+9021 a dilly
+0001 v kbq_wr
+0002 v kbq_sel
+0080 v data_bit
+0000 v led_port
+0010 v kbq_rtc_ce
+0080 v kbq_ser_dat
+0080 v serial_port
+0008 v kbq_uart_rst

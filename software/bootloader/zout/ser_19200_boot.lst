@@ -1,0 +1,423 @@
+   1:				;;; 
+   2:				;;; Retro-25 Boostrap loader
+   3:				;;; Eric Hazen - 2020
+   4:				;;; 
+   5:				;;; Tries for serial port load for 10s, then
+   6:				;;; loads flash code (see flashtable below)
+   7:				;;;
+   8:				;;; ----- Serial loader ----------------------------
+   9:				;;; operate at 19200 baud for 16MHz CPU clock
+  10:				;;; (4800 baud for 4MHz CPU clock)
+  11:				;;; 
+  12:				;;; output '*'
+  13:				;;; expect binary words (LSB first):
+  14:				;;;    0x5791, <addr>, <count>
+  15:				;;; then <count> data bytes
+  16:				;;; jumps to <addr> after load
+  17:				;;; if header not seen after a few bytes, start over
+  18:				;;; by sending '*' again
+  19:				;;;
+  20:				;;; echo back all received bytes
+  21:				;;;
+  22:				;;; After serial timeout, copy flash images using flashtable
+  23:				;;; to RAM, and jump to 'flashentry'
+  24:				;;; 
+  25:				;;; Mods:
+  26:				;;; 21 Jan 2023, hazen - remove calc, only umon for scope clock
+  27:				;;; 
+  28:				;;; 17 Jun 2020, hazen - reflect RST vectors to $8000
+  29:				;;; add second flash image:
+  30:				;;;    UMON in EEPROM at $5000, org $8100
+  31:				;;; ------------------------------------------------
+  32:				
+  33:				;;; expects to be stored at 0000 in flash, then
+  34:				;;; relocates to 'ram' below
+  35:				
+  36:				;;; can be non-zero for testing
+  37:     -	0000          	rom:	equ	0
+  38:				
+  39:				;;; base of system RAM (RST vectors)
+  40:     -	8000          	ramb: 	equ	$8000
+  41:				;;; RAM location where the boot loader relocates to
+  42:     -	F800          	ram:	equ	0f800h
+  43:					
+  44:     -	F800          	off	equ	ram-rom
+  45:				
+  46:     -	0000          		org	rom
+  47:				
+  48:    0+10	0000  C33B00  	start:	jp	mover
+  49:   10+10	0003  C30201  		jp	flashtable	;dummy jump to locate flash table	
+  50:				
+  51:				;	org	rom+40h		;skip past restart vectors
+  52:				
+  53:					;; reflect the vectors up to bottom of RAM (normally $8000)
+  54:     -	0008          		org	$0008
+  55:   20+10	0008  C30880  		jp	ramb+$0008
+  56:				
+  57:     -	0010          		org	$0010
+  58:   30+10	0010  C31080  		jp	ramb+$0010
+  59:				
+  60:     -	0018          		org	$0018
+  61:   40+10	0018  C31880  		jp	ramb+$0018
+  62:				
+  63:     -	0020          		org	$0020
+  64:   50+10	0020  C32080  		jp	ramb+$0020
+  65:				
+  66:     -	0028          		org	$0028
+  67:   60+10	0028  C32880  		jp	ramb+$0028
+  68:				
+  69:     -	0030          		org	$0030
+  70:   70+10	0030  C33080  		jp	ramb+$0030
+  71:				
+  72:     -	0038          		org	$0038
+  73:   80+10	0038  C33880  		jp	ramb+$0038
+  74:				
+  75:   90+10	003B  3100F8  	mover:	ld	sp,ram
+  76:				
+  77:					;; copy code to RAM
+  78:  100+10	003E  210000  		ld	hl,rom
+  79:  110+10	0041  1100F8  		ld	de,ram
+  80:  120+10	0044  011903  		ld	bc,last-rom+1	;size of code to move
+  81:  130+16+5	0047  EDB0    		ldir
+  82:				
+  83:  146+10	0049  C381FA  		jp	main+off
+  84:				
+  85:     -	0100          		org	rom+100h
+  86:				
+  87:				;;;
+  88:				;;; table of flash images
+  89:				;;; 
+  90:     -	0100          	flashentry:
+  91:     -	0100  0081    		dw	0x8100		;entry point (UMON)
+  92:				
+  93:     -	0008          	fimgsiz: equ	8		;size of one entry in bytes
+  94:					
+  95:     -	0102          	flashtable:	
+  96:     -	0102  FECA    		dw	0xcafe		;magic number marks start of table
+  97:					
+  98:				;;; second flash image (umon)
+  99:     -	0104  0050    		dw	0x5000		;above the first image
+ 100:     -	0106  0081    		dw	0x8100		;RAM target address
+ 101:     -	0108  000F    		dw	0x0f00		;size in bytes (must fit below 9000)
+ 102:     -	010A  0081    		dw	0x8100		;entry point (ignored, see flashentry)
+ 103:				
+ 104:     -	010C  00000000		dw	0,0,0,0		;table ends with zeroes
+	              00000000
+ 105:				
+ 106:     -	0200          		org	rom+200h	;above flash table
+ 107:					
+ 108:					
+ 109:				;;;----------------------------------------------------
+ 110:				;;; all code from here on must be position-corrected
+ 111:				;;; (all absolute addresses must add "+off")
+ 112:				;;;----------------------------------------------------
+ 113:				
+ 114:				;;;
+ 115:				;;; 1200-baud bit-bang serial routines
+ 116:				;;;
+ 117:				;;; getc - read character, return in A
+ 118:				;;; putc - write character from A
+ 119:				;;;
+ 120:					
+ 121:				;;; hardware ports
+ 122:     -	0000          	led_port:	equ	0	;port 0 for LED/keyboard output
+ 123:     -	0040          	led_bit:	equ	40H	;bit 6 for LED control
+ 124:					
+ 125:     -	0080          	serial_port:	equ	80H	;input port
+ 126:					
+ 127:     -	0080          	data_bit:	equ	80H	;input data mask
+ 128:				
+ 129:				;;; -------------------- macros --------------------
+ 130:				;;; 23/10 seem to be OK for 4800 baud (4MHz CPU) or 19200 (16MHz CPU)
+ 131:				
+ 132:     -	0017          	full:	equ	23
+ 133:     -	000A          	half:	equ	10
+ 134:				
+ 135:				;;; delay macro:  uses B
+ 136:				;;; 40 T-states/loop	
+ 137:				delay	macro	p1
+ 138:					local	dilly
+ 139:					ld	b,p1
+ 140:				
+ 141:				dilly:	nop
+ 142:					nop
+ 143:					nop
+ 144:					nop
+ 145:					nop
+ 146:					djnz	dilly
+ 147:					endm
+ 148:				
+ 149:				bitdly	macro
+ 150:					delay	full
+ 151:					endm
+ 152:				
+ 153:				halfdly macro
+ 154:					delay	half
+ 155:					endm
+ 156:				
+ 157:				mark	macro
+ 158:					ld	a,data_bit
+ 159:					out	(led_port),a
+ 160:					endm
+ 161:				
+ 162:				spc	macro
+ 163:					ld	a,0
+ 164:					out	(led_port),a
+ 165:					endm
+ 166:				
+ 167:				;;; ----------------------------------------
+ 168:				
+ 169:				;;; 
+ 170:				;;; receive a character to A
+ 171:				;;; 
+ 172:     -	0200          	getc:	
+ 173:  156+11	0200  C5      		push	bc
+ 174:  167+11	0201  D5      		push	de
+ 175:					
+ 176:  178+7	0202  1E09    		ld	e,9		; bit count (start + 8 data)
+ 177:					
+ 178:					;; wait for high
+ 179:  185+11	0204  DB80    	ci0:	in	a,(serial_port)
+ 180:  196+7	0206  E680    		and	data_bit
+ 181:  203+7+5	0208  28FA    		jr	z,ci0		;loop if/while low
+ 182:					
+ 183:  210+11	020A  DB80    	ci1:	in	a,(serial_port) ; read serial line
+ 184:  221+7	020C  E680    		and	data_bit	; isolate serial bit
+ 185:  228+7+5	020E  20FA    		jr	nz,ci1		; loop while high
+ 186:  235+35	0210' 060A0000		halfdly			;delay to middle of first (start) bit
+	              00000010
+	              F9
+ 187:				
+ 188:     -	0219          	ci3:
+ 189:  270+35	0219' 06170000		bitdly			;delay to middle of LSB data bit
+	              00000010
+	              F9
+ 190:  305+11	0222  DB80    		in	a,(serial_port) ; read serial character
+ 191:  316+7	0224  E680    		and	data_bit	; isolate serial data
+ 192:  323+7+5	0226  2801    		jr	z,ci6		; j if data is 0
+ 193:  330+4	0228  3C      		inc	a		; now register A=serial data
+ 194:  334+4	0229  1F      	ci6:	rra			; rotate it into carry
+ 195:  338+4	022A  1D      		dec	e		; dec bit count
+ 196:  342+7+5	022B  2805    		jr	z,ci5		; j if last bit
+ 197:					
+ 198:  349+4	022D  79      		ld	a,c		; this is where we assemble char
+ 199:  353+4	022E  1F      		rra			; rotate it into the character from carry
+ 200:  357+4	022F  4F      		ld	c,a
+ 201:				
+ 202:  361+12	0230  18E7    		jr	ci3		; do next bit
+ 203:					
+ 204:  373+4	0232  79      	ci5:	ld	a,c
+ 205:  377+10	0233  D1      		pop	de
+ 206:  387+10	0234  C1      		pop	bc
+ 207:				
+ 208:  397+10	0235  C9      		ret
+ 209:				
+ 210:				;;;
+ 211:				;;; send character in A
+ 212:				;;; saves all
+ 213:				;;; 
+ 214:					
+ 215:  407+11	0236  C5      	putc:	push	bc
+ 216:  418+11	0237  D5      		push	de
+ 217:  429+11	0238  F5      		push	af
+ 218:					
+ 219:  440+4	0239  4F      		ld	c,a
+ 220:				
+ 221:  444+7	023A  1E08    		ld	e,8		;bit counter
+ 222:					
+ 223:  451+18	023C' 3E80D300		mark			;ensure a stop bit
+ 224:  469+35	0240' 06170000		bitdly
+	              00000010
+	              F9
+ 225:					
+ 226:  504+18	0249' 3E00D300		spc			;start bit
+ 227:  522+35	024D' 06170000		bitdly
+	              00000010
+	              F9
+ 228:					
+ 229:					;; loop here for bits
+ 230:  557+8	0256  CB19    	rrot:	rr	c		;shift out LSB
+ 231:  565+7+5	0258  3806    		jr	c,one
+ 232:					
+ 233:  572+18	025A' 3E00D300		spc
+ 234:  590+12	025E  1804    		jr	bite
+ 235:     -	0260          	one:
+ 236:  602+18	0260' 3E80D300		mark
+ 237:     -	0264          	bite:
+ 238:  620+35	0264' 06170000		bitdly
+	              00000010
+	              F9
+ 239:					
+ 240:  655+4	026D  1D      		dec	e
+ 241:  659+7+5	026E  20E6    		jr	nz,rrot
+ 242:  666+18	0270' 3E80D300		mark
+ 243:  684+35	0274' 06170000		bitdly			; stop bit
+	              00000010
+	              F9
+ 244:					
+ 245:  719+10	027D  F1      		pop	af
+ 246:  729+10	027E  D1      		pop	de
+ 247:  739+10	027F  C1      		pop	bc
+ 248:  749+10	0280  C9      		ret
+ 249:					
+ 250:				;;; ----------------------------------------
+ 251:				;;; main program starts here
+ 252:				;;; ----------------------------------------
+ 253:  759+7	0281  3E2A    	main:	ld	a,'*'		;output '*'
+ 254:  766+17	0283  CD36FA  		call	putc+off
+ 255:				
+ 256:				;;; delay here for 10s waiting for serial data, then jump to EEPROM loader
+ 257:  783+10	0286  210000  		ld	hl,0
+ 258:  793+7	0289  0632    		ld	b,50
+ 259:					
+ 260:					;; wait here for either a low on serial line or timeout
+ 261:  800+11	028B  DB80    	schk:	in	a,(serial_port) ; read serial line
+ 262:  811+7	028D  E680    		and	data_bit	; isolate serial bit
+ 263:  818+7+5	028F  283B    		jr	z,bload		; loop while high
+ 264:				
+ 265:  825+6	0291  2B      		dec	hl
+ 266:  831+4	0292  7C      		ld	a,h
+ 267:  835+4	0293  B5      		or	l
+ 268:  839+7+5	0294  20F5    		jr	nz, schk
+ 269:				
+ 270:  846+8+5	0296  10F3    		djnz	schk
+ 271:				
+ 272:				;;; EEPROM loader
+ 273:				;;; load all images from the flash table
+ 274:  854+16	0298  2A0201  		ld	hl,(flashtable)
+ 275:  870+4	029B  7C      		ld	a,h		;check for 0xcafe
+ 276:  874+7	029C  FECA    		cp	0xca
+ 277:  881+7+5	029E  20E1    		jr	nz,main
+ 278:  888+4	02A0  7D      		ld	a,l
+ 279:  892+7	02A1  FEFE    		cp	0xfe
+ 280:  899+7+5	02A3  20DC    		jr	nz,main
+ 281:  906+14	02A5  DD210401		ld	ix,flashtable+2	;first image
+ 282:     -	02A9          	flashy:	
+ 283:  920+19	02A9  DD6E00  		ld	l,(ix)		;start address
+ 284:  939+19	02AC  DD6601  		ld	h,(ix+1)
+ 285:					;; check for zero = end
+ 286:  958+4	02AF  7C      		ld	a,h
+ 287:  962+4	02B0  B5      		or	l
+ 288:  966+7+5	02B1  2815    		jr	z,flash_done
+ 289:  973+19	02B3  DD5E02  		ld	e,(ix+2)	;target address
+ 290:  992+19	02B6  DD5603  		ld	d,(ix+3)
+ 291: 1011+19	02B9  DD4E04  		ld	c,(ix+4)	;count
+ 292: 1030+19	02BC  DD4605  		ld	b,(ix+5)
+ 293: 1049+16+5	02BF  EDB0    		ldir			;move it
+ 294:				
+ 295: 1065+10	02C1  010800  		ld	bc,fimgsiz
+ 296: 1075+15	02C4  DD09    		add	ix,bc
+ 297: 1090+12	02C6  18E1    		jr	flashy
+ 298:				
+ 299:     -	02C8          	flash_done:	
+ 300: 1102+16	02C8  2A0001  		ld	hl,(flashentry)	;start address
+ 301:				
+ 302: 1118+4	02CB  E9      		jp	(hl)
+ 303:				
+ 304:				;;; got a serial character, start loader
+ 305: 1122+7	02CC  0605    	bload:	ld	b,5		;max bad bytes
+ 306:					;; read chars until 5 received or 0x91 seen
+ 307: 1129+17	02CE  CD00FA  	bin1:	call	getc+off
+ 308: 1146+17	02D1  CD36FA  		call	putc+off
+ 309: 1163+7	02D4  FE91    		cp	0x91		;first magic byte?
+ 310: 1170+7+5	02D6  2804    		jr	z,bin1a
+ 311: 1177+8+5	02D8  10F4    		djnz	bin1
+ 312: 1185+12	02DA  18A5    		jr	main		;bail out on error after 5 bad bytes
+ 313:					
+ 314:					;; read chars, skipping repeat 0x91, wait for 0x57
+ 315: 1197+17	02DC  CD00FA  	bin1a:	call	getc+off
+ 316: 1214+17	02DF  CD36FA  		call	putc+off
+ 317: 1231+7	02E2  FE91    		cp	0x91
+ 318: 1238+7+5	02E4  28F6    		jr	z,bin1a
+ 319: 1245+7	02E6  FE57    		cp	0x57
+ 320: 1252+7+5	02E8  2097    		jr	nz,main
+ 321:					
+ 322:					;; get address to hl
+ 323: 1259+17	02EA  CD00FA  		call	getc+off
+ 324: 1276+17	02ED  CD36FA  		call	putc+off
+ 325: 1293+4	02F0  6F      		ld	l,a
+ 326: 1297+17	02F1  CD00FA  		call	getc+off
+ 327: 1314+17	02F4  CD36FA  		call	putc+off
+ 328: 1331+4	02F7  67      		ld	h,a
+ 329: 1335+11	02F8  E5      		push	hl
+ 330: 1346+14	02F9  DDE1    		pop	ix
+ 331:					;; get count to bc
+ 332: 1360+17	02FB  CD00FA  		call	getc+off
+ 333: 1377+17	02FE  CD36FA  		call	putc+off
+ 334: 1394+4	0301  4F      		ld	c,a
+ 335: 1398+17	0302  CD00FA  		call	getc+off
+ 336: 1415+17	0305  CD36FA  		call	putc+off
+ 337: 1432+4	0308  47      		ld	b,a
+ 338:					;; read and store data
+ 339: 1436+17	0309  CD00FA  	bin2:	call	getc+off
+ 340: 1453+17	030C  CD36FA  		call	putc+off
+ 341: 1470+7	030F  77      		ld	(hl),a
+ 342: 1477+6	0310  23      		inc	hl
+ 343: 1483+6	0311  0B      		dec	bc
+ 344: 1489+4	0312  78      		ld	a,b
+ 345: 1493+4	0313  B1      		or	c
+ 346: 1497+7+5	0314  20F3    		jr	nz,bin2
+ 347:				
+ 348: 1504+8	0316  DDE9    		jp	(ix)
+ 349:				
+ 350:     -	0318          	last	equ	$
+ 351:				
+ 352:     -	0318          		end
+
+
+
+Statistics:
+
+     4	passes
+     0	jr promotions
+    40	symbols
+   344	bytes
+
+    17	macro calls
+   165	macro bytes
+    24	invented symbols
+
+
+
+Symbol Table:
+
+?b0001           212     
+?b0003           21b     
+?b0006           242     
+?b0009           24f     
+?b0013           266     
+?b0016           276     
+bin1             2ce     
+bin1a            2dc     
+bin2             309     
+bite             264     
+bload            2cc     
+ci0              204     
+ci1              20a     
+ci3              219     
+ci5              232     
+ci6              229     
+data_bit       =  80     
+fimgsiz        =   8     
+flash_done       2c8     
+flashentry       100     
+flashtable       102     
+flashy           2a9     
+full           =  17     
+getc             200     
+half           =   a     
+last           = 318     
+led_bit        =  40     
+led_port       =   0     
+main             281     
+mover             3b     
+off            =f800     
+one              260     
+putc             236     
+ram            =f800     
+ramb           =8000     
+rom            =   0     
+rrot             256     
+schk             28b     
+serial_port    =  80     
+start              0     

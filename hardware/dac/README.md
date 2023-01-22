@@ -2,6 +2,8 @@
 
 This is the control/interface board, designed to work with the Z80 CPU board from my retro-25 calculator project [git](https://github.com/eshazen/retro-25/tree/master/hardware/cpu/RevA).
 
+**See bottom for ECOs**
+
 Features:
 
 * MAX503/530 DAC.  Needs 1 address bit and 8 bit data with strobe.
@@ -69,3 +71,12 @@ select bit.
 
 The UART requires one status port, one latched control port and input and output data ports.
 
+## Errors in Rev A (ECOs)
+
+* Jumper pins 22, 23 of U8, U9 (+5V to DAC missing)
+* cut trace to pins 8,9 of U8, U9 (DAC A0, A1)
+* wire U8 pin 8 to U3 pin 10
+
+The second two changes move the DAC A0+A1 to the LED latch pin 10 ("LED3").
+This is because the CPU A0 can't be shared with the DACs since it's already
+used for the decoder U5.

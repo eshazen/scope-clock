@@ -78,7 +78,7 @@ fp-info-cache
 *.xml
 *.csv
 
-zout
+*/zout
 
 # Prerequisites
 *.d

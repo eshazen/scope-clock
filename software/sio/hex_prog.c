@@ -124,7 +124,7 @@ int main( int argc, char*argv[] )
 
 	printf("Send: %s\n", obuf);
 	s = sio_cmd( fd, obuf);
-	dump_string( s);
+	//	dump_string( s);
 	
 	if( strstr( s, "error")) {
 	  printf("Error, aborting for now\n");
