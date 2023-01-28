@@ -1,10 +1,14 @@
-;;; 
-;;; hex input/output
+;;; ------------------------------------------------------------
+;;; hex.asm:  hex input/output
 ;;;
 ;;; phex1    - print hex digit from A
 ;;; phex2    - print hex byte from A
 ;;; phex4    - print hex word from HL
 ;;; ihex1    - hex to binary in A, NC if valid
+;;; vhex     - parse hex value up to 4 digits at (HL) to DE
+;;; cvint    - convert hex values from pointer at (HL), count in B
+;;; 	       to integers in list at (DE)
+;;; ------------------------------------------------------------
 
 
 ;;; print hex nibble from a
@@ -58,28 +62,6 @@ ihex1:	sub	'0'		;A-'0'
 	cp	16
 	ccf
 	ret
-
-;;;;;; dump argc/argv
-;;;adump:	ld	a,(argc)
-;;;	ld	b,a
-;;;	call	phex2
-;;;	call	crlf
-;;;	ld	hl,iargv
-;;;	ld	a,b
-;;;	or	a
-;;;	ret	z
-;;;	
-;;;adump1:	ld	e,(hl)
-;;;	inc	hl
-;;;	ld	d,(hl)
-;;;	inc	hl
-;;;	ex	de,hl		;swap hl/de
-;;;	call	phex4
-;;;	ex	de,hl
-;;;	call	space
-;;;	djnz	adump1
-;;;	call	crlf
-;;;	ret
 
 ;;; get hex from (hl) and return in A (NC if valid)
 ;;; increment HL past char

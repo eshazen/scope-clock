@@ -1,7 +1,14 @@
-;;; Console I/O
+;;; ------------------------------------------------------------
+;;; console.asm: Console I/O
 ;;;
 ;;; assumes putc, getc
-;;; 
+;;;
+;;; toupper - convert A to uppercase
+;;; space   - print a space
+;;; crlf    - send CR/LF
+;;; puts    - output C style string from HL
+;;; gets    - read console string to HL like C gets()
+;;; ------------------------------------------------------------
 
 ;;; convert A to uppercase
 toupper: cp	'a'

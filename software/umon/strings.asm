@@ -1,17 +1,19 @@
 ;;;
 ;;; string library
 ;;;
-
-	;; parse string at (HL) into space-separated tokens
-	;; In:	HL points to null-terminated string
-	;; 	DE points to buffer for 16-bit pointers to tokens
-	;; 	B contains maximum token count
-	;; Out: HL overwritten
-	;; 	DE overwritten
-	;; 	C contains count of tokens found
-	;; 	separators in buffer overwritten with \0
-	;; 
-	;; leading spaces in buffer ignored
+;;; strtok - parse string at (HL) to tokens at (DE), B = max count
+;;; 
+	
+;;; parse string at (HL) into space-separated tokens
+;;; In:	HL points to null-terminated string
+;;; 	DE points to buffer for 16-bit pointers to tokens
+;;; 	B contains maximum token count
+;;; Out: HL overwritten
+;;; 	DE overwritten
+;;; 	C contains count of tokens found
+;;; 	separators in buffer overwritten with \0
+;;; 
+;;; leading spaces in buffer ignored
 
 	;; initialize
 strtok:	xor	a		;clear a
