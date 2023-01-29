@@ -76,6 +76,7 @@ The UART requires one status port, one latched control port and input and output
 * Jumper pins 22, 23 of U8, U9 (+5V to DAC missing)
 * cut trace to pins 8,9 of U8, U9 (DAC A0, A1)
 * wire U8 pin 8 to U3 pin 10
+* Jumper pins 11, 12 of U9 (GND on DAC missing)
 
 The second two changes move the DAC A0+A1 to the LED latch pin 10 ("LED3").
 This is because the CPU A0 can't be shared with the DACs since it's already
