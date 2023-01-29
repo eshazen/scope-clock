@@ -9,6 +9,8 @@ serial_port:	equ	80H	;input port
 led_port:	equ	0	;port 0 for LED/keyboard output
 	
 data_bit:	equ	80H	;input data mask
+
+pzero:	db	0
 	
 ;;; serial port timing macros
 ;;; 23/10 seem to be OK for 4800 baud (4MHz CPU) or 19200 (16MHz CPU)
@@ -89,7 +91,7 @@ ci5:	ld	a,c
 
 ;;;
 ;;; send character in A
-;;; saves all
+;;; saves all, keep bits 0-6 set to (pzero) value
 ;;; 
 putc:
 	push	bc
@@ -101,12 +103,13 @@ putc:
 	ld	e,8		;bit counter
 	
 ;	mark			;ensure a stop bit
-	ld	a,data_bit
+	ld	a,(pzero)
+	or	a,data_bit
 	out	(led_port),a
 	call	bitdly
 	
 ;	spc			;start bit
-	ld	a,0
+	and	a,0ffh-data_bit
 	out	(led_port),a
 	call	bitdly
 	
@@ -115,12 +118,12 @@ rrot:	rr	c		;shift out LSB
 	jr	c,one
 	
 ;	spc
-	ld	a,0
+	and	a,0ffh-data_bit
 	out	(led_port),a
 	jr	biter
 one:
 ;	mark
-	ld	a,data_bit
+	or	a,data_bit
 	out	(led_port),a
 biter:
 	call	bitdly
@@ -128,7 +131,7 @@ biter:
 	dec	e
 	jr	nz,rrot
 ;	mark
-	ld	a,data_bit
+	or	a,data_bit
 	out	(led_port),a
 	call	bitdly		; stop bit
 	
@@ -137,11 +140,8 @@ biter:
 	pop	bc
 	ret
 
-;;; function to update port zero, keep serial line marking
-;;; (use to output port 0 when serial line is idle)
-updpzero:
-	ld	a,data_bit
+;;; set port zero bits 0-6 and update pzero from A
+setport0: or	a,data_bit
+	ld	(pzero),a
 	out	(led_port),a
-;	mark
 	ret
-	

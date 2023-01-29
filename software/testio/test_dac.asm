@@ -11,31 +11,55 @@ KBQ_UART_RST:	equ	8	;UART reset
 KBQ_RTC_CE:	equ	10h	;RTC chip enable
 KBQ_SER_DAT:	equ	80h	;bit-bang serial out
 
-umon:	equ	8100h		;re-enter umon
+umon:	equ	9100h		;re-enter umon
 
 serial_mask:	equ	80H	;input port
 led_port:	equ	0	;port 0 for LED/keyboard output
 	
 data_bit:	equ	80H	;input data mask
 
-	org	9000h		;above UMON
+	org	0a000h		;above UMON
 	
-	jp	start
-	jp	echo
-	jp	uart_rx
-	jp	uart_tx
-	jp	uart_st
-	jp	write_led
-	jp	dac_x
-	jp	dac_y
+	jp	start		;0
+	jp	echo		;1
+	jp	uart_rx		;2
+	jp	uart_tx		;3
+	jp	uart_st		;4
+	jp	write_led	;5
+	jp	dac_x		;6
+	jp	dac_y		;7
+	jp	uart_rst	;8
+	jp	test_dac	;9
+	jp	0000h		;end of table
+
+;;; test writing to DAC over and over until UART
+test_dac:
+	call	uart_rst
+dac_loop:	
+	call	uart_st		;test UART
+	and	10h
+	jp	nz,umon
+
+	inc	hl
+	ld	a,h
+	and	0fh
+	ld	h,a
+	
+	call	dac_x
+	call	dac_y
+
+	jr	dac_loop
 
 ;;; echo the UART
 echo:	call	uart_rst
 
 echo1:	call	uart_st
 	and	10h
-	jr	z,echo
+	jr	z,echo1
+	
 	call	uart_rx
+	cp	a,'$'
+	jp	z,umon
 	call	uart_tx
 	jr	echo1
 	
@@ -138,21 +162,14 @@ dac_y:	ld	a,0
 	ld	a,data_bit+3	;low bits 11
 	out	(led_port),a
 	ld	a,l
-	out	(41h),a
+	out	(40h),a
 	ld	a,8
 	call	write_led
 	ld	a,data_bit+3	;low bits 11
 	out	(led_port),a
 	ld	a,h
-	out	(41h),a
+	out	(40h),a
 	ret
 
-	org	9100h
-	ld	a,0
-	call	write_led
-	jp	8100h
-
-
-	
 	.end
 	

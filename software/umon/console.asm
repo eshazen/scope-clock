@@ -43,6 +43,10 @@ puts:	ld	a,(hl)
 ;;; return the control character in A
 ;;; only accept up to BC bytes
 ;;; used:  A + 3 stack levels
+;;;
+;;; starting some support for readline-like editing
+;;; ^P and ^N are special- clear the buffer and store only the ctrl char
+;;;   at the start of the buffer, then NUL and return
 
 gets:	push	de
 	push	hl
@@ -71,8 +75,13 @@ gets0:
 	jr	z,gets1
 	cp	08h		;check for BS
 	jr	z,gets3
+	cp	0eh		;check for ^N
+	jr	z,gets4
+	cp	10h		;check for ^P
+	jr	z,gets4
 	cp	20h		;check for printable
 	jr	nc,gets2	;store only printable
+	jr	gets0
 	;; handle backspace
 gets3:
 	or	a		;clear CY
@@ -107,9 +116,13 @@ gets1:	ld	(hl),0
 	call	crlf
 	pop	af
 
-	pop	hl
+getsb:	pop	hl
 	pop	de
 	pop	bc
 	
 	ret
 	
+;;; store A at start of buffer, then NUL and return
+gets4:	ld	(hl),a		;store control char
+	inc	hl
+	jr	gets1

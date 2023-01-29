@@ -9,7 +9,6 @@
 ;;; g <addr>                   goto addr
 ;;; b <addr>                   set breakpoint (currently 3-byte call)
 ;;; a <val1> <val2>            hex Arithmetic
-;;; f <addr>                   dump HP registers from <addr> (A)
 ;;; c                          continue from breakpoint
 ;;; c <addr>                   continue, set new breakpoint
 ;;; m <start> <end> <size>     memory region compare
@@ -20,34 +19,47 @@
 ;;; /			       repeat last command
 ;;; 
 ;;; calculator hardware
+;;; f <addr>                   dump HP registers from <addr> (A)
 ;;; k                          scan keyboard
 ;;; 7 <addr>		       update 7-segment display from <addr>
 ;;; V <addr>                   update VFD display from <addr>
-
+;;;
+;;; scope hardware
+;;; s <Xvalue> <Yvalue>	       set scope X, Y dac values
+;;; 
+;;; 
 ;;; New version, mostly new comments and modularity
 ;;; intended to be more portable, and include all features
-;;; Fixes:  GOTO now pushes breakpoint addr on stack
+;;; Fixes:  	GOTO now pushes breakpoint, sets regs
+;;; 		register edit/display
+;;;		bit-bang serial preserves register 0 bits 0-6
 
 ;;; ---------- compile options ----------
 calc_hw equ	0		; support for calculator hardware
-
-
+readline equ	1		; GNU-readline like command recall
+debug	equ	0		; some debug support
+scope	equ	1		; support for scope expansion board
+	
 ; 	org	08100H
  	org	9100H	
 
 stak:	equ	$		;stack grows down from start
 
 ;;; jump table for useful entry points
-	jmp	main		;0000  cold start
-	jmp	save_state	;0003  save state (breakpoint)
-	jmp	getc		;0006  read serial input to A
-	jmp	putc		;0009  output serial from A
-	jmp	crlf		;000c  output CR/LF
-	jmp	puts		;000f  output string from HL
-	jmp	phex2		;0012  output hex byte from A
-	jmp	phex4		;0015  output hex word from HL
+jump_table:	
+	jmp	main		;0  cold start
+	jmp	save_state	;1  save state (breakpoint)
+	jmp	getc		;2  read serial input to A
+	jmp	putc		;3  output serial from A
+	jmp	crlf		;4  output CR/LF
+	jmp	puts		;5  output string from HL
+	jmp	phex2		;6  output hex byte from A
+	jmp	phex4		;7  output hex word from HL
+	jmp	0000h		;8  marks end of table for error check
 
 ;;; ---- data area (must be in RAM)  ----
+
+jumptbl: dw	jump_table	;default jump table for 'f' command
 
 ;;; save CPU state coming from extrnal prog
 savein:	db	0,0,0		;instruction overwritten by breakpoint
@@ -69,13 +81,26 @@ savbc:	dw	0
 savaf:	dw	0
 	
 savetop: equ	$
-	
-;regnam:	db	'HL', 0, 'DE', 0, 'BC', 0, 'AF', 0
 
-pzero:	db	0		;port 0 value bits 0-6
+bufsiz:	equ	60		;command buffer size
+
+;;; readline-style recall buffers
+if readline
+nrecall: equ	3		;number of recall buffers
+	
+recbuf:	rept	nrecall
+	rept	bufsiz
+	db	0
+	endm
+	endm
+
+recptr:	dw	0
+	
+endif	
+	
 lastc:	db	0		;last command byte
 
-buff:	rept	60
+buff:	rept	bufsiz
 	db	0
 	endm
 
@@ -101,6 +126,9 @@ if calc_hw
 	INCLUDE "vfd.asm"
 	INCLUDE "diskey.asm"
 endif	
+if scope
+	INCLUDE "scope.asm"
+endif	
 
 banner:	db	"UMON v0.9b ORG ",0
 error:	db	"ERROR",0
@@ -122,11 +150,16 @@ usage:  db      "h                     print this help", 13, 10
 	db      "r <reg> <val>         edit stored regs", 13, 10
         db      "c                     continue from breakpoint", 13, 10
         db      "l                     binary load", 13, 10
-        db      "/                     repeat last command", 13, 10
+	db	"f <func>              call function from jump table", 13, 10
+	db      "j [<addr>]            set/display jump table start addr", 13, 10
+        db      "^P                    repeat last command", 13, 10
 if calc_hw	
         db      "k                     scan keyboard", 13, 10
         db      "7 <addr>              update LED display from <addr>", 13, 10
         db      "V <addr>              update VFD display (0=blank)", 13, 10
+endif	
+if scope
+	db	"s <DACX> <DACY>       set scope DAC values", 13, 10
 endif	
 	db	0
 
@@ -151,17 +184,51 @@ loop:	ld	a,'>'		;prompt
 	ld	bc,bend-buff	; maximum size
 	call	gets
 
-	;; check for '/'
+if debug
+	;; dump buffer
+	ld	hl,buff
+	ld	b,bend-buff
+	call	hdump
+endif	
+	;; check for ^P
 	ld	a,(buff)
-	cp	a,'/'
+	cp	a,10h
 	jr	nz,not_rept
+	;; we got a ^P
+if readline
+	;; recall buffer
+	ld	hl,recbuf
+	ld	de,buff
+	ld	bc,bufsiz
+	ldir
+	;; pull the recall stack down
+	ld	hl,recbuf+bufsiz
+	ld	de,recbuf
+	ld	bc,bufsiz*(nrecall-1)
+	ldir
+	;; print the current buffer
+	ld	hl,buff
+	call	puts
+not_rept:	
+	;; not a ^P, store in recall stack
+	;; first move everything in stack up
+	ld	hl,recbuf
+	ld	de,recbuf+bufsiz
+	ld	bc,bufsiz*(nrecall-1)
+	ldir
 
+	;; now copy buffer to stack
+	ld	hl,buff
+	ld	de,recbuf
+	ld	bc,bufsiz
+	ldir
+else
 	;; restore last command byte
 	ld	a,(lastc)
 	ld	(buff),a
-
-	;; parse string into tokens at argc / argv
 not_rept:
+endif	
+	;; parse string into tokens at argc / argv
 	ld	hl,buff
 	ld	de,argv
 	ld	b,maxarg
@@ -185,9 +252,6 @@ not_rept:
 	cp	a,'H'
 	jz	help
 
-	cp	a,'F'
-	jz	hpdump
-	
 	cp	a,'A'
 	jz	arith
 
@@ -218,10 +282,17 @@ not_rept:
 	cp	a,'Z'
 	jz	zero
 
-	
+	cp	a,'F'
+	jz	call_func
+
+	cp	a,'J'
+	jz	set_jumptbl
 
 ;;; ---------- calculator-specific commands ----------
 if calc_hw	
+	cp	a,'F'
+	jz	hpdump
+
 	cp	a,'K'
 	jz	kbtest
 
@@ -232,6 +303,11 @@ if calc_hw
 	jz	vfdtest
 endif
 ;;; --------------------------------------------------
+
+;;; ---------- Scope commands ----------
+	cp	a,'S'
+	jz	scope_dacs
+;;; ----------------------------------------
 	
 	cp	a,'M'
 	jz	memcmp
@@ -271,18 +347,89 @@ endif
 
 ;;; set port zero value
 zero:	ld	a,(iargv+2)
-	ld	(pzero),a
+	call	setport0
 	jp	loop
-
-;;; alternative subr to do this from outside
-setpzero: ld (pzero),a
-	ret
 
 help:	ld	hl,usage
 	call	puts
 	jp	loop
 
 
+;;; set jump table address for successive 'F' commands
+;;;    no args:  display
+set_jumptbl:
+	ld	a,(argc)
+	cp	1
+	jr	nz,setjtb1
+	;; display
+	ld	hl,(jumptbl)
+	call	phex4
+	call	crlf
+	jp	loop
+
+setjtb1: cp	2
+	jp	nz,errz
+	ld	hl,(iargv+2)
+	ld	(jumptbl),hl
+	jp	loop
+
+
+;;; call function from jump table, first restoring regs
+;;; check for end of table as 'JP 0000' for error
+call_func:
+	ld	a,(argc)	;check for value
+	cp	2
+	jp	nz,errz
+
+	;; count size of table
+	ld	hl,(jumptbl)
+	ld	b,0
+	
+cfttz:	inc	hl		;point past jump
+	ld	e,(hl)		;get LSB
+	inc	hl		;point to MSB
+	ld	d,(hl)		;get MSB
+	inc	hl		;point to next entry
+	inc	b
+	ld	a,d
+	or	e		;test for zero
+	jr	nz,cfttz
+	;; now B has table size including zero
+	ld	a,b
+;	call	phex2
+;	call	crlf
+
+	ld	hl,save_state	;user returns to here
+	push	hl
+	ld	a,(iargv+2)	;get function code
+	cp	b		; func code - max
+	jp	nc,errz
+
+	ld	e,a		;to DE
+	ld	d,0
+	ld	hl,(jumptbl)
+	add	hl,de		;multiply by 3
+	add	hl,de
+	add	hl,de
+	jp	gother		;go restore state, call (hl)
+
+
+;;; simple multiplication HL = B * C
+;;; uses AF
+mult8x8: inc	b		;check for B=0 without disturbing anything
+	dec	b
+	ret	z
+
+	push	de
+	push	bc
+	ld	hl,0
+	ld	d,0
+	ld	e,c
+mult1:	add	hl,de
+	djnz	mult1
+	pop	bc
+	pop	de
+	ret
 
 ;;; ---------- register edit ----------
 
@@ -663,6 +810,8 @@ arith:	ld	hl,(iargv+2)	;first arg
 	call	crlf
 	jp	loop
 
+;;; ---------- HP register display ----------
+if calc_hw	
 ;;; HP calculator word size
 wsize:	equ	14
 ;;; register names
@@ -700,7 +849,40 @@ hpr1:	dec	hl
 	add	hl,de
 	call	crlf
 	ret
+;;; ----------------------------------------
+endif	
 
+
+
+
+;;; ---------------Scope hardware---------------------
+scope_dacs:
+	ld	hl,(iargv+2)	;get X value
+	call	dac_x
+	ld	hl,(iargv+4)	;get Y value
+	call	dac_y
+	jp	loop
+	
+;;	ld	a,(argc)
+;;	cp	a,2		;need minimum 2 args
+;;	jp	c,errz
+;;	ld	hl,(iargv+2)	;get X value
+;;	call	dac_x
+;;	ld	a,(argc)
+;;	cp	a,3
+;;	jr	z,scopey	;go if different Y value
+;;scop1:	call	dac_y
+;;	
+;;	jp	loop
+;;
+;;scopey:	ld	hl,(iargv+4)
+;;	jr	scop1
+
+;;; --------------------------------------------------
+	
+
+
+	
 altban:	db	"BREAK ",0	
 
 ;;; ---------- breakpoint entry ----------
