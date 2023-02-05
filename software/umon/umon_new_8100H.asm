@@ -41,7 +41,7 @@ debug	equ	0		; some debug support
 scope	equ	1		; support for scope expansion board
 	
 ; 	org	08100H
- 	org	UMON_ORIGIN	
+ 	org	8100H	
 
 stak:	equ	$		;stack grows down from start
 

@@ -126,7 +126,7 @@ int main( int argc, char*argv[] )
   }
 
   if( !test) {
-    if( (fd = sio_open("/dev/ttyUSB1", baud_r)) < 0) {
+    if( (fd = sio_open("/dev/ttyUSB0", baud_r)) < 0) {
       printf("Error opening serial port\n");
       exit( 1);
     }

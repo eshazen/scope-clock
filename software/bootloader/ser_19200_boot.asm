@@ -23,6 +23,7 @@
 ;;; to RAM, and jump to 'flashentry'
 ;;; 
 ;;; Mods:
+;;; 4 Feb 2023, hazen - update umon to umon_new with many new commands
 ;;; 21 Jan 2023, hazen - remove calc, only umon for scope clock
 ;;; 
 ;;; 17 Jun 2020, hazen - reflect RST vectors to $8000
@@ -255,7 +256,8 @@ main:	ld	a,'*'		;output '*'
 
 ;;; delay here for 10s waiting for serial data, then jump to EEPROM loader
 	ld	hl,0
-	ld	b,50
+;	ld	b,50		;50 is about 40 seconds at 4MHz
+	ld	b,8		;so this should be about 6s
 	
 	;; wait here for either a low on serial line or timeout
 schk:	in	a,(serial_port) ; read serial line

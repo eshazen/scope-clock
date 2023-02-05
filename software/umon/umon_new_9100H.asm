@@ -55,7 +55,16 @@ jump_table:
 	jmp	puts		;5  output string from HL
 	jmp	phex2		;6  output hex byte from A
 	jmp	phex4		;7  output hex word from HL
-	jmp	0000h		;8  marks end of table for error check
+if scope
+	;; scope expansion support
+	jmp	uart_rst	;8  reset UART
+	jmp	uart_rx		;9  Receive UART to A (blocking)
+	jmp	uart_tx		;0a send UART from A (blocking)
+	jmp	write_led	;0b write LED/control latch
+	jmp	dac_x		;0c write 12 bits to X DAC
+	jmp	dac_y		;0d write 12 bits to Y DAC
+endif	
+	jmp	0000h		;8/0e  marks end of table for error check
 
 ;;; ---- data area (must be in RAM)  ----
 

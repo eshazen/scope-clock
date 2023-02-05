@@ -1,7 +1,7 @@
-all: umon.hex
+all: umon_new.hex
 
 Z80ASM = /home/hazen/bin/zmac
-base=xxx
+base=8100H
 
 umon.hex: umon_nobase.asm console.asm hex.asm s19200.asm diskey.asm c-link.asm vfd.asm
 ifeq ($(base),xxx)

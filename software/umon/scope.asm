@@ -6,8 +6,9 @@
 ;;; uart_st	- read UART status register
 ;;; 		  bit 0 - TX ready  bit 4 - RX available
 ;;; write_led	- write LED latch from bit 0-5
-;;; dac_x	- set DAC X from HL
-;;; dac_y	- set DAC Y from HL
+;;; dac_x	- set DAC X from HL (12 bits, two LSB should be 00)
+;;; dac_y	- set DAC Y from HL (12 bits, two LSB should be 00)
+;;;   NOTE:  DAC working range is 400H to C00H (-2.5 to 2.5V)
 
 ;;; bits in keyboard latch (port 00)
 KBQ_WR:		equ	1	;select write mode
@@ -55,16 +56,16 @@ uart_st:
 	ret
 
 ;;; write LEDs from A
-;;;   uses: E
 write_led:
-	ld	e,a
+	push	af
 	ld	a,3		;low bits 11
 	call	setport0
-	ld	a,e
+	pop	af
 	out	(41h),a
 	ret
 
 ;;; write DAC X from HL
+;;; uses:  AF, E
 dac_x:	ld	a,0
 	call	write_led
 	ld	a,1		;low bits 01

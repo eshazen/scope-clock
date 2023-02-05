@@ -78,7 +78,9 @@ fp-info-cache
 *.xml
 *.csv
 
-*zout*
+*.ps
+
+zout/
 
 # Prerequisites
 *.d
@@ -112,3 +114,13 @@ fp-info-cache
 *.exe
 *.out
 *.app
+
+*.cas
+*.wav
+*.ams
+*.bds
+*.cim
+*.cmd
+*.lst
+*.mds
+*.tap
