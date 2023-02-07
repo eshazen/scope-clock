@@ -1,7 +1,6 @@
 //
-// 12 x 12 inch base, all flat
+// stack deflection amp on PSU
 //
-
 
 include <3bp1.scad>
 include <6sn7.scad>
@@ -15,8 +14,8 @@ pcb_so = 0.25*mm;
 
 // overal case dimensions
 // it sort of fits in 12x12
-case_wid = 12*mm;		/* X size */
-case_len = 12*mm;		/* Y size */
+case_wid = 9.5*mm;		/* X size */
+case_len = 12.5*mm;		/* Y size */
 
 case_hgt = 7*mm;			/* Z size */
 case_thk = 1.6;
@@ -167,22 +166,23 @@ module assembly() {
      translate( [crt_wid-crt_center_x, case_len-crt_tube, crt_up]) crt();
 
 // toroidal transformer
-     translate( [toroid_dia/2+trans_spc, trans_spc+toroid_dia/2, 0.25*mm])
-//     translate( [crt_wid-crt_center_x, toroid_thk+trans_spc, crt_up])  rotate( [90, 0, 0])
+//     translate( [toroid_dia/2+trans_spc, trans_spc+toroid_dia/2, 0.25*mm])
+     translate( [crt_wid-crt_center_x, toroid_thk+trans_spc, crt_up])  rotate( [90, 0, 0])
 	  toroid();
 
-// AMP board
-//     translate( [case_wid-amp_wid, case_len-amp_len, 0.25*mm])
-     translate( [case_wid, case_len-amp_len, pcb_so])
-     rotate( [0, 0, 90])
-	  amp();
+// AMP
+     translate( [case_wid-amp_len, case_len-amp_wid, pcb_so+1.5*mm])
+       rotate( [0, 0, 0]) amp();
+     translate( [case_wid, case_len-hv_wid, pcb_so])
+	 rotate( [0, 0, 90]) hv();
+
 
 // HV board
 
      // right side
      // rotate( [0, 0, 180]) translate( [-hv_wid, -case_len+cpu_len+0.5*mm, pcb_so])
-     translate( [case_wid-hv_wid, case_len-hv_len-amp_len-trans_spc*2, 0.25*mm])
-	  hv();
+//     translate( [case_wid-hv_wid, case_len-hv_len-amp_len-trans_spc*2, 0.25*mm])
+//	  hv();
      
 // logic board
      translate( [cpu_wid, case_len, pcb_so])
