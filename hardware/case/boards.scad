@@ -1,8 +1,12 @@
+//
+// 12 x 12 inch base, all flat
+//
+
 
 include <3bp1.scad>
 include <6sn7.scad>
 
-sides = 1;
+sides = 0;
 
 mm = 25.4;
 
@@ -177,7 +181,7 @@ module assembly() {
 
      // right side
      // rotate( [0, 0, 180]) translate( [-hv_wid, -case_len+cpu_len+0.5*mm, pcb_so])
-     translate( [case_wid-hv_wid, case_len-hv_len-amp_len-trans_spc*2, 0])
+     translate( [case_wid-hv_wid, case_len-hv_len-amp_len-trans_spc*2, 0.25*mm])
 	  hv();
      
 // logic board
