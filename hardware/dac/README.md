@@ -73,11 +73,21 @@ The UART requires one status port, one latched control port and input and output
 
 ## Errors in Rev A (ECOs)
 
+* Transistor pinout (Q1) is wrong
 * Jumper pins 22, 23 of U8, U9 (+5V to DAC missing)
+
+### Modifications to make the DAC run faster
+
+* Add a '161 and a '139 so that the address cycles through the 4 DAC bytes automatically:
+   * Disconnect nCE and wire to nWR
+   * Disconnect nLDAC and wire to nDACY (also to '161 nRESET)
+   * Disconnect nDACX and wire to '161 CP and '139 nEN
+   * Wire '161 Q1 to '139 A1.
+   * Ground '139 A0
+   * Wire 139 O0 to DAC_X nWR and nCE
+   * Wire 139 O1 to DAC_Y nWR and nCE
+   * Wire '161 Q0 to both DAC A0+A1
 * cut trace to pins 8,9 of U8, U9 (DAC A0, A1)
 * wire U8 pin 8 to U3 pin 10
 * Jumper pins 11, 12 of U9 (GND on DAC missing)
 
-The second two changes move the DAC A0+A1 to the LED latch pin 10 ("LED3").
-This is because the CPU A0 can't be shared with the DACs since it's already
-used for the decoder U5.

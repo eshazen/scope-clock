@@ -1,5 +1,8 @@
 // #define DEBUG
 
+// rotate 180 degrees, (invert X and Y)
+#define FLIP
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,11 +14,12 @@
 #define DEFL 0x200
 
 #define LEFT (CENTR-DEFL)
+#define RIGHT (CENTR+DEFL)
 
 // scale
-#define SCAL 10
+#define SCAL 7
 
-void draw( int x, int y, int cx, int cy);
+void draw( int x, int y, int cx, int cy, int do_draw);
 
 int nvert = 0;			/* total vertex count */
 
@@ -52,12 +56,15 @@ int main( int argc, char *argv[]) {
   }
   printf( "\tDB %d\n", nvert*4);
 
+  int do_draw;
+
   for( int i=0; i<strlen( text); i++) {
+    do_draw = 0;
     int c = text[i]-32;		/* character index */
     int nv = simplex[c][0];	/* number of verteces */
     int cw = simplex[c][1];	/* text width */
 #ifdef DEBUG    
-    printf("; char = '%c' (%d) with %d verteces width %d\n", text[i], text[i], nv, cw);
+    printf("; char = '%c' (%d) with %d vertices width %d\n", text[i], text[i], nv, cw);
 #endif
     if( nv) {
       // draw all the vectors (ignore penup for now)
@@ -68,10 +75,10 @@ int main( int argc, char *argv[]) {
 	printf("; vector %d (%d, %d)\n", k, cx, cy);
 #endif
 	if( cx >= 0 && cy >= 0) {
-	  draw( x, y, cx, cy);
+	  draw( x, y, cx, cy, do_draw);
+	  do_draw = 1;
 	} else {
-	  // penup
-	  ;
+	  do_draw = 0;
 	}
       }
     }
@@ -83,7 +90,13 @@ int main( int argc, char *argv[]) {
 
 
 // emit a vector
-void draw( int x, int y, int cx, int cy)
+void draw( int x, int y, int cx, int cy, int do_draw)
 {
-  printf("\tDW %04xH, %04xH\n", x+cx*SCAL, y+cy*SCAL);
+  unsigned int xc = RIGHT-(x+cx*SCAL);
+  unsigned int yc = RIGHT-(y+cy*SCAL);
+
+  if( do_draw)
+    xc |= 0x8000;
+  
+  printf("\tDW %04xH, %04xH  ; %s\n", xc, yc, do_draw ? "draw" : "move");
 }

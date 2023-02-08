@@ -15,7 +15,7 @@ umon:	equ	8100h		;re-enter umon
 
 dlist:	equ	0a200h
 
-serial_mask:	equ	80H	;input port
+serial_port:	equ	80H	;inputport
 led_port:	equ	0	;port 0 for LED/keyboard output
 	
 data_bit:	equ	80H	;input data mask
@@ -34,6 +34,8 @@ data_bit:	equ	80H	;input data mask
 	jp	dpy_list	;9
 	jp	0000h		;end of table
 
+dval:	dw	8
+
 ;;; write display list from memory
 ;;; display list format:
 ;;;     <count>
@@ -48,11 +50,16 @@ data_bit:	equ	80H	;input data mask
 ;;; so 4 = 1 point,  8 = 2 points, 0 = 64 points
 
 dpy_list:
-	call	uart_rst
+;	call	uart_rst
 dpy_loop:	
-	call	uart_st		;test UART
-	and	10h
-	jp	nz,umon
+;	call	uart_st		;test UART
+;	and	10h
+	;; check bit-bang UART
+	in	a,(serial_port)
+	and	data_bit
+	jp	z,umon
+	
+;	jp	nz,umon
 
 	ld	hl,dlist
 	
@@ -66,14 +73,39 @@ dpy1:	ld	b,(hl)		;get count
 	jr	z,dpy_loop
 	dec	b		;restore count
 
-dpy2:	outi
+
+dpy2:
+	;; set the Z axis
+	outi			;send LSB of X
+	;; check for move/draw in LSB of X
+	bit	7,(hl)		;first byte bit 7 set for draw
+	ld	a,data_bit+3	;default bit 2=0, beam on for draw
+	jr	nz,dodraw
+	;; move, turn off the Z
+	ld	a,data_bit+7
+dodraw:	
+	out	(led_port),a
+
 	outi
 	outi
 	outi
+
+	;; delay before asserting LDAC for the Z axis to settle
+	push	af
+	call	delay
+	pop	af
 
 	out	(40h),a		;activate nLDAC
-	jr	nz,dpy2
+	
+	;; turn off the beam
+	ld	a,data_bit+7
+	out	(led_port),a
+	push	af
+	call	delay
+	pop	af
 
+	jr	nz,dpy2
+	
 	jr	dpy1
 
 ;;; test writing to DAC over and over until UART
@@ -124,7 +156,7 @@ dac_loop:
 
 ;;; delay
 delay:	push	hl
-	ld	hl,800h
+	ld	hl,(dval)
 dily1:	dec	hl
 	ld	a,h
 	or	l
