@@ -1,3 +1,5 @@
 (sym_lib_table
   (lib (name "Antek")(type "KiCad")(uri "${KIPRJMOD}/Antek.kicad_sym")(options "")(descr ""))
+  (lib (name "my_relay")(type "KiCad")(uri "${KIPRJMOD}/my_relay.kicad_sym")(options "")(descr ""))
+  (lib (name "misc_bom")(type "KiCad")(uri "${KIPRJMOD}/misc_bom.kicad_sym")(options "")(descr ""))
 )

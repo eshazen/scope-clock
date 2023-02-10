@@ -2,4 +2,6 @@
   (lib (name "HBH_fuse_holder")(type "KiCad")(uri "/home/hazen/work/scope-clock/hardware/scope-clock/HBH_fuse_holder.pretty")(options "")(descr ""))
   (lib (name "GSP1_power_entry")(type "KiCad")(uri "/home/hazen/work/scope-clock/hardware/scope-clock/GSP1_power_entry.pretty")(options "")(descr ""))
   (lib (name "Switch_8GA")(type "KiCad")(uri "/home/hazen/work/6cy7-amp/amp/Switch_8GA.pretty")(options "")(descr ""))
+  (lib (name "Octal_Sockets")(type "KiCad")(uri "${KIPRJMOD}/../deflection_amp/Octal_Sockets.pretty")(options "")(descr ""))
+  (lib (name "my_relay")(type "KiCad")(uri "${KIPRJMOD}/my_relay.pretty")(options "")(descr ""))
 )

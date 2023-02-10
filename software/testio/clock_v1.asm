@@ -139,14 +139,14 @@ mul01:	add	hl,de
 ;;; --------------------------------------------------
 
 test_init:
-;	;; set RTC from stored values
-;	ld	a,(time_hr)
-;	ld	h,a
-;	ld	a,(time_min)
-;	ld	l,a
-;	ld	a,(time_sec)
-;	ld	e,a
-;	call	rtc_set
+	;; set RTC from stored values
+	ld	a,(time_hr)
+	ld	h,a
+	ld	a,(time_min)
+	ld	l,a
+	ld	a,(time_sec)
+	ld	e,a
+	call	rtc_set
 
 test_start:
 	call	time_to_hand
