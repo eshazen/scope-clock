@@ -71,23 +71,27 @@ select bit.
 
 The UART requires one status port, one latched control port and input and output data ports.
 
-## Errors in Rev A (ECOs)
+## Changed for Rev 2
 
-* Transistor pinout (Q1) is wrong
-* Jumper pins 22, 23 of U8, U9 (+5V to DAC missing)
+* Transistor pinout (Q1) is wrong **fixed**
+* Jumper pins 22, 23 of U8, U9 (+5V to DAC missing) **fixed**
 
 ### Modifications to make the DAC run faster
 
 * Add a '161 and a '139 so that the address cycles through the 4 DAC bytes automatically:
-   * Disconnect nCE and wire to nWR
+   * Disconnect nCE and wire to nWR **fixed**
    * Disconnect nLDAC and wire to nDACY (also to '161 nRESET)
-   * Disconnect nDACX and wire to '161 CP and '139 nEN
-   * Wire '161 Q1 to '139 A1.
-   * Ground '139 A0
-   * Wire 139 O0 to DAC_X nWR and nCE
-   * Wire 139 O1 to DAC_Y nWR and nCE
-   * Wire '161 Q0 to both DAC A0+A1
-* cut trace to pins 8,9 of U8, U9 (DAC A0, A1)
-* wire U8 pin 8 to U3 pin 10
-* Jumper pins 11, 12 of U9 (GND on DAC missing)
+   * Disconnect nDACX and wire to '161 CP and '139 nEN **fixed**
+   * Wire '161 Q1 to '139 A0. **fixed**
+   * Ground '139 A1 **fixed** 
+   * Wire 139 O0 to DAC_X nWR and nCE **fixed**
+   * Wire 139 O1 to DAC_Y nWR and nCE **fixed**
+   * Wire '161 Q0 to both DAC A0+A1  **fixed**
+* cut trace to pins 8,9 of U8, U9 (DAC A0, A1) **fixed**
+* (wire U8 pin 8 to U3 pin 10) nope.  That's A0/A1 taken care of above
+* Ground 12, 14, 17 on DAC **fixed**
+* DAC VDD missing **fixed**
+* Swap nEXP and nDACX on U5 **fixed**
+
+* Wire RTC SDI (pin 12) to LED3 **fixed**
 
