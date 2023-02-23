@@ -18,4 +18,4 @@ to generate the +8V and -5V with bridge rectifiers.
 
 * Relay wiring wrong.  Cut traces to J1 pins 1,3.  Wire pin 1 to Relay pin 11 and pin 3 to relay pin 12.
   (leave gap in cut, ~180VAC)
-  
+* Add bleeder on 360V!  (ouch!)
