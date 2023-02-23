@@ -13,3 +13,9 @@ Requirements-
 
 It seems I have a bunch of surplus 12V transformers in my office, so probably will use two of those
 to generate the +8V and -5V with bridge rectifiers.
+
+## ECOs for Rev 1
+
+* Relay wiring wrong.  Cut traces to J1 pins 1,3.  Wire pin 1 to Relay pin 11 and pin 3 to relay pin 12.
+  (leave gap in cut, ~180VAC)
+  
