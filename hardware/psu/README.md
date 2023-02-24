@@ -1,5 +1,10 @@
 # Power Supply
 
+## Status
+
+**2023-02-23** Mostly working.  Relay wiring incorrect (see ECOs).  Otherwise all outputs
+verified working, at least with no load.
+
 Requirements-
 
 * AC power entry, fuse, power switch
