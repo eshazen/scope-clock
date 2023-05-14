@@ -1,6 +1,12 @@
 # Power Supply
 
-Requirements-
+## Rev A ECOs
+
+* C13 should be much bigger, maybe 4700uF
+* Bridge footprints are wrong (holes way too small)
+* Relay wiring is incorrect
+
+## Requirements
 
 * AC power entry, fuse, power switch
 * +8V for logic (~1A) regulator on CPU board makes 5V for DAC (Antek 6.3V winding too wimpy)
