@@ -5,6 +5,8 @@
 * C13 should be much bigger, maybe 4700uF
 * Bridge footprints are wrong (holes way too small)
 * Relay wiring is incorrect
+* Can't use the S4 or S6 outputs of the CW multipler,
+only S5, S7.  Maybe add an S3 tap?  In any case, fix J14 wiring.
 
 ## Requirements
 

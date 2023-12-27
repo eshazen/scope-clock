@@ -24,7 +24,7 @@ time_sec_pos:	db 0		;second hand position 0-59
 ;;; delay between checking RTC
 delay_speed:	dw 40h
 ;;; delay between vectors
-dval:	dw	8
+dval:	dw	4
 
 ;;; --------------------------------------------------
 ;;; auto-generated table with
