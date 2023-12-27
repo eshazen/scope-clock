@@ -1,6 +1,8 @@
 ;;;
 ;;; clock_v1.asm - first integrated clock
 ;;;
+;;; working OK 12/27/23 after some timing tweaks to delay_speed, dval
+;;; 
 
 umon:	equ	8100h		;re-enter umon
 
@@ -11,7 +13,8 @@ data_bit:	equ	80H	;input data mask
 
 	org	0a000h		;above UMON
 
-	jp	test_init
+	jp	test_init	;cold start, set clock per time below
+	jp	test_start	;warm start, read from RTC
 
 time_hr:	db 1		;time hours 1-12
 time_min:	db 0		;time minutes 0-59
@@ -22,9 +25,9 @@ time_min_pos:	db 0		;minute hand position 0-59
 time_sec_pos:	db 0		;second hand position 0-59
 
 ;;; delay between checking RTC
-delay_speed:	dw 40h
+delay_speed:	dw 10h		;10H is pretty fast, no lag in display
 ;;; delay between vectors
-dval:	dw	4
+dval:	dw	4		;4 is nice, no flicker
 
 ;;; --------------------------------------------------
 ;;; auto-generated table with
