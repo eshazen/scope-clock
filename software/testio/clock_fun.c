@@ -40,11 +40,21 @@ void draw_hand( int pos, double wid, double len)
     { 1, wid/2, 0},
     { 1, -wid/2, 0}};
 
+  // zero-width option
+  a_point p0[] = {
+    { 0, 0, 0},
+    { 1, 0, len/2},
+    { 1, 0, len},
+    { 0, 0, 0}};
+
   if( debug)
     printf("%s draw_hand( %d, %f, %f)\n", 
 	   ps ? "%" : ";", pos, len, wid);
 
-  draw_poly( pos, sizeof(p)/sizeof(a_point), p);
+  if( wid > 0)
+    draw_poly( pos, sizeof(p)/sizeof(a_point), p);
+  else
+    draw_poly( pos, sizeof(p)/sizeof(a_point), p0);
 
 }
 

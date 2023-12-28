@@ -6,7 +6,7 @@
 include <3bp1.scad>
 include <6sn7.scad>
 
-sides = 0;
+sides = 1;
 
 mm = 25.4;
 
@@ -140,8 +140,8 @@ module case() {
 	  % cube( [case_thk, case_len, case_hgt]);
 	  translate( [case_wid, 0, 0])
 	       % cube( [case_thk, case_len, case_hgt]);
-	  translate( [0, case_len, 0])
-	       % cube( [case_wid, case_thk, case_hgt]);
+//	  translate( [0, case_len, 0])
+//	       % cube( [case_wid, case_thk, case_hgt]);
      }
 
 }

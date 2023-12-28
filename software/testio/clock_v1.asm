@@ -29,6 +29,12 @@ delay_speed:	dw 10h		;10H is pretty fast, no lag in display
 ;;; delay between vectors
 dval:	dw	4		;4 is nice, no flicker
 
+;;; exit to UMON, turn of beam first
+umon_exit:
+	ld	a,data_bit+7
+	out	(output_port),a	;turn off beam
+	jp	umon
+
 ;;; --------------------------------------------------
 ;;; auto-generated table with
 ;;; clock_tics:  bare face with tics
@@ -163,7 +169,7 @@ test_loop:
 	;; check bit-bang UART
 	in	a,(input_port)
 	and	data_bit
-	jp	z,umon
+	jp	z,umon_exit
 	
 	call	clock_face
 	pop	bc

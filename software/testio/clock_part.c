@@ -10,10 +10,10 @@ int main( int argc, char *argv[]) {
 
   // sizes of the features
   double sec_len = 1.0;		/* length of second hand */
-  double sec_wid = 0.01;
+  double sec_wid = 0.0;
 
   double min_len = 0.8;		/* length of minute hand */
-  double min_wid = 0.05;	/* width of base */
+  double min_wid = 0.1;	        /* width of base */
 
   double hr_len = 0.5;		/* length of hour hand */
   double hr_wid = 0.2;		/* width of base */
