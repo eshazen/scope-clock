@@ -1,22 +1,20 @@
 //
-// 12 x 12 inch base, all flat
+// 12 x 17 inch chassis
 //
-// fancy, multi-level design
-//
-
 
 include <3bp1.scad>
 include <6sn7.scad>
 
-sides = 1;
-front = 1;
-left = 1;
-
-chassis = 1;			/* chassis underneath */
-
-control = 0;			/* control panels */
+include <grill.scad>
 
 mm = 25.4;
+
+sides = 1;
+front = 0;
+lid = 1;
+left = 1;
+control = 0;			/* control panels */
+chassis = 1;			/* chassis underneath */
 
 chas_hgt = 2*mm;
 
@@ -24,29 +22,17 @@ chas_hgt = 2*mm;
 pcb_so = 0.25*mm;
 
 // overal case dimensions
-// it sort of fits in 12x12
-case_wid = 12*mm;		/* X size */
+case_wid = 17*mm;		/* X size */
 case_len = 12*mm;		/* Y size */
 
-case_hgt = 7*mm;			/* Z size */
+case_hgt = 4.5*mm;			/* Z size */
 case_thk = 1.6;
 
 // front control panel
 fp_hgt = 1.75*mm;
 
-// left half of case
-case_lwid = case_wid-5*mm;
-case_lhgt = 4.75*mm;
-
-// front to rear slope
-case_slope = 2*mm;
-case_angle = atan2( case_slope, case_len);
-case_hypo = sqrt( case_len*case_len + case_slope*case_slope);
-
-echo("angle = ", case_angle);
-
 // height of CRT centerline
-crt_up = 3*mm;
+crt_up = 2.25*mm;
 
 //
 // draw a transformer
@@ -76,8 +62,6 @@ crt_wid = 4.8*mm;
 crt_len = 3.35*mm;
 
 crt_tube = 9.4*mm;
-
-crt_center_x = 47;		/* WRT corner of PCB */
 
 module crt() {
      translate( [126, 0, -12]) {
@@ -154,61 +138,38 @@ module toroid() {
   cylinder( h=toroid_thk, d=toroid_dia);
 }
 
-p_front = [ [0,0], [case_wid, 0], [case_wid, case_lhgt], [case_wid-case_lwid, case_lhgt],
-	   [case_wid-case_lwid, case_hgt], [0, case_hgt], [0,0] ];
-
-p_rear = [ [0,0], [case_wid, 0], [case_wid, case_lhgt-case_slope], 
-	   [case_wid-case_lwid, case_lhgt-case_slope],
-	   [case_wid-case_lwid, case_hgt-case_slope], 
-	   [0, case_hgt-case_slope], [0,0] ];
-
 module case() {
 
      // base plate
+     color("#202020")
      cube( [case_wid, case_len, case_thk]);
+
      if( sides) {
+
 	  // rear
-	  rotate( [90, 0, 0])
-	       % linear_extrude( height=case_thk) polygon( points=p_rear);
-	  // left
-	  if( left) {
-	       translate( [case_wid, 0, 0])
-		    rotate( [90, 0, 90])
-		    % linear_extrude( height=case_thk) 
-		    polygon( points = [ [0,0], [case_len, 0], [case_len, case_lhgt],
-					[0, case_lhgt-case_slope], [0, 0]]);
-	  }
+	  % cube( [case_wid, case_thk, case_hgt]);
+
 	  // right
-	  rotate( [90, 0, 90])
-	       % linear_extrude( height=case_thk) 
-	       polygon( points = [ [0,0], [case_len, 0], [case_len, case_hgt],
-				   [0, case_hgt-case_slope], [0, 0]]);
+	  rotate( [0, 0, 90])
+	  % cube( [case_len, case_thk, case_hgt]);
+
+	  // left
+	  translate( [case_wid, 0, 0])
+	  rotate( [0, 0, 90])
+	  % cube( [case_len, case_thk, case_hgt]);
 
 	  // front
 	  if( front) {
 	       translate( [0, case_len, 0])
-		    rotate( [90, 0, 0])
-		    % linear_extrude( height=case_thk) polygon( points=p_front);
+		    % cube( [case_wid, case_thk, case_hgt]);
 	  }
 
-	  // low top
-	  translate( [case_wid-case_lwid, 0, case_lhgt-case_slope])
-	       rotate( [case_angle, 0, 0])
-	       %  cube( [case_lwid, case_hypo, case_thk]);
-
-	  // high top
-	  translate( [0, 0, case_hgt-case_slope])
-	       rotate( [case_angle, 0, 0])
-	       % cube( [case_wid-case_lwid, case_hypo, case_thk]);
-
-	  // upper side
-	  translate( [case_wid-case_lwid, 0, case_lhgt-case_slope])
-	       rotate( [90, 0, 90])
-	       % linear_extrude( height=case_thk) 
-	       polygon( points = [ [0,0], [case_len, case_slope],
-				   [case_len, case_slope+case_hgt-case_lhgt],
-				   [0, case_hgt-case_lhgt],
-				   [0,0]]);
+	  // lid
+	  if( lid) {
+	       translate( [0, 0, case_hgt])
+		    color("gray")
+		    grill( case_wid, case_len, case_thk, 0.25*mm, 0.25*mm, case_thk/2);
+	  }
 
 	  if( control) {
 	       // front control panel
@@ -225,7 +186,7 @@ module case() {
 
      if( chassis) {
 	  translate( [0, 0, -chas_hgt])
-	       color("black")
+	       color("#a88000")
 	       cube( [case_wid, case_len, chas_hgt]);
      }
 
@@ -249,18 +210,15 @@ module assembly() {
 
 
 // rotate the CRT assembly
-     rotate( [10, 0, 0])
+//     rotate( [10, 0, 0])
 // move the CRT up
-     translate( [crt_wid-crt_center_x, case_len-crt_tube, crt_up]) crt();
+     translate( [3*mm, case_len-crt_tube, crt_up]) crt();
 
 // toroidal transformer
-//     translate( [toroid_dia/2+trans_spc, trans_spc+toroid_dia/2, 0.25*mm])
-//     translate( [crt_wid-crt_center_x, toroid_thk+trans_spc, crt_up])  rotate( [90, 0, 0])
-     translate( [9.5*mm, 2.5*mm, case_thk])
+     translate( [-toroid_dia/2-trans_spc+case_wid-hv_wid, trans_spc+toroid_dia/2, 0.25*mm])
 	  toroid();
 
 // AMP board
-//     translate( [case_wid-amp_wid, case_len-amp_len, 0.25*mm])
      translate( [case_wid, case_len-amp_len, pcb_so])
      rotate( [0, 0, 90])
 	  amp();
@@ -268,18 +226,17 @@ module assembly() {
 // HV board
 
      // right side
-      rotate( [0, 0, 180]) translate( [-hv_wid, -case_len+cpu_len+1.0*mm, pcb_so])
-     //translate( [case_wid-hv_wid, case_len-hv_len-amp_len-trans_spc*2, 0.25*mm])
+//      rotate( [0, 0, 180]) translate( [-hv_wid, -case_len+cpu_len+1.0*mm, pcb_so])
+     translate( [case_wid-hv_wid, case_len-hv_len-amp_len-trans_spc*2, 0.25*mm])
 	  hv();
      
 // logic board
-     translate( [cpu_wid, case_len, pcb_so])
+     translate( [case_wid-hv_wid-0.25*mm, case_len, pcb_so])
      rotate( [0, 0, 180])
      cpu_stack();
 
 // transformers
 
-     translate( [0, 5*mm, 0])
      translate( [case_wid-fil_c/2-trans_spc*2, fil_d/2+trans_spc*0.6, case_thk]) {
 	  rotate( [0, 0, 60]) transf( fil_a, fil_b, fil_c, fil_d, fil_h);
 	  translate( [-fil_c-trans_spc, 0, 0])
