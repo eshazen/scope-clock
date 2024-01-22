@@ -10,7 +10,7 @@ include <grill.scad>
 mm = 25.4;
 
 sides = 1;
-front = 0;
+front = 1;
 lid = 1;
 left = 1;
 control = 0;			/* control panels */
