@@ -13,13 +13,15 @@ function mm(x)=x*25.4;
 
 pcb_len = mm(3.35);
 pcb_hole_off = mm(0.175);
-pcb_hole_dia = mm(0.170);
+//pcb_hole_dia = mm(0.170);
+pcb_hole_dia = mm(0.180);
 
 pcb_up = mm(0.25);
 
 brkt_wid = mm(0.5);
 brkt_z = mm(1);
-thk = 1;
+//thk = 1;
+thk = 2;
 
 side_len = pcb_len-mm(0.5);
 
