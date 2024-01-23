@@ -10,8 +10,13 @@ include <grill.scad>
 mm = 25.4;
 
 sides = 1;
+<<<<<<< HEAD
 front = 1;
 lid = 1;
+=======
+front = 0;
+lid = 0;
+>>>>>>> 15269cf9a1d9942f2d86915990cab2c58aa1b534
 left = 1;
 control = 0;			/* control panels */
 chassis = 1;			/* chassis underneath */
@@ -219,19 +224,17 @@ module assembly() {
 	  toroid();
 
 // AMP board
-     translate( [case_wid, case_len-amp_len, pcb_so])
+     translate( [case_wid-0.25*mm, case_len-amp_len, pcb_so])
      rotate( [0, 0, 90])
 	  amp();
 
 // HV board
 
-     // right side
-//      rotate( [0, 0, 180]) translate( [-hv_wid, -case_len+cpu_len+1.0*mm, pcb_so])
      translate( [case_wid-hv_wid, case_len-hv_len-amp_len-trans_spc*2, 0.25*mm])
 	  hv();
      
 // logic board
-     translate( [case_wid-hv_wid-0.25*mm, case_len, pcb_so])
+     translate( [case_wid-hv_wid-0.5*mm, case_len, pcb_so])
      rotate( [0, 0, 180])
      cpu_stack();
 
@@ -245,13 +248,7 @@ module assembly() {
 	       	  rotate( [0, 0, 60]) transf( log_a, log_b, log_c, log_d, log_h);
      }
      
-//     translate( [case_wid-fil_d/2-trans_spc, fil_c/2+trans_spc, case_thk]) {
-//	  transf( fil_a, fil_b, fil_c, fil_d, fil_h);
-//	  translate( [-fil_d-trans_spc, 0, 0])
-//	       	  transf( fil_a, fil_b, fil_c, fil_d, fil_h);
-//	  translate( [2*(-fil_d-trans_spc), 0, 0])
-//	       	  transf( fil_a, fil_b, fil_c, fil_d, fil_h);
-//     }
+
 
 }
 

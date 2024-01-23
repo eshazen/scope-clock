@@ -4569,7 +4569,7 @@
     (effects (font (size 1.905 1.905)) (justify left bottom))
     (uuid 20126d73-1882-4099-8b7b-9d40b1c383bd)
   )
-  (text "Input Bits:\nKD0 - encoder A\nKD1 - encoder B\nKD2 - encoder SW\nKD3 - button 1\nKD4 - button 2\nKD5 - RTC Serial Data\nKD6 - Spare"
+  (text "Input Bits:\nKD0 - encoder SW\nKD1 - encoder A\nKD2 - encoder B\nKD3 - button 1\nKD4 - button 2\nKD5 - RTC Serial Data\nKD6 - Spare"
     (at 13.97 73.66 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 25a5142b-244c-49a4-a501-731e81cdfa78)
