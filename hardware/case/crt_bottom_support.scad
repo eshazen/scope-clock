@@ -116,10 +116,12 @@ crt_raise = 0.5;
 raise=1;
 
 // bottom bracket
-bottom();
+rotate( [90, 0, 0])
+// bottom();
 
 // top clamp
-// translate( [ -(clamp_wid-sup_wid)/2, 0, sup_wid+raise]) top();
+//translate( [ -(clamp_wid-sup_wid)/2, 0, sup_wid+raise])
+top();
 
 // CRT neck
 // translate( [sup_wid/2, mm(1), crt_hgt+crt_dia/2+crt_raise]) rotate( [90, 0, 0]) crt();
