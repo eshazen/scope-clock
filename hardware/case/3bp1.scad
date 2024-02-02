@@ -7,17 +7,25 @@ module 3bp1() {
      mm = 25.4;
      e = 0.1;
 
-     $fn = 32;
+     $fn = 128;
 
 
 // origin at center of base in the plane of the PCB more or less
 
      module tube() {
-	  // neck
-	  cylinder( h=(5.38+e)*mm, d=2*mm);
-	  // top
-	  translate( [0, 0, 5.38*mm])
-	       cylinder( h=3.875*mm, d1=2*mm, d2=3.063*mm);
+	  color("silver",0.8) {
+	       // neck
+	       cylinder( h=(5.38+e)*mm, d=2*mm);
+	       // top
+	       translate( [0, 0, 5.38*mm])
+		    cylinder( h=3.875*mm, d1=2*mm, d2=3.063*mm);
+
+	  }
+	  // face
+	  translate( [0, 0, (5.38+3.875)*mm])
+	       color("white")
+	       cylinder( h=2, d=3.063*mm);
+
      }
 
 // pin circle
@@ -38,6 +46,6 @@ module 3bp1() {
 	  }
      }
 
-	  % tube();
+     tube();
      base();
 }

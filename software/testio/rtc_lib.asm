@@ -63,7 +63,7 @@ bcd_to_int:
 	ld	b,a
 	and	0fh		;only 1's in A
 
-	srl	b
+	srl	b		;shift 10s to 
 	srl	b
 	srl	b
 	srl	b		;now b has 10's
@@ -123,6 +123,7 @@ conv62:	sla	b		; shift 10s left 4
 	sla	b
 	sla	b
 	sla	b
+	
 	add	b		; and merge with 1's
 	pop	bc
 	ret

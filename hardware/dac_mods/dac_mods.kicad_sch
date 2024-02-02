@@ -521,7 +521,7 @@
     (pin "9" (uuid 5ce67f68-f5c0-4214-b49f-83e7d64b9b96))
   )
 
-  (symbol (lib_id "74xx:74LS139") (at 154.94 64.77 0) (unit 1)
+  (symbol (lib_id "74xx:74LS139") (at 154.94 64.77 0) (unit 2)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid f76bfdec-a6b1-47b5-998c-b7d469cbdb07)
     (property "Reference" "U?" (id 0) (at 154.94 54.61 0))
@@ -565,7 +565,7 @@
       (reference "U?") (unit 1) (value "74LS161") (footprint "")
     )
     (path "/f76bfdec-a6b1-47b5-998c-b7d469cbdb07"
-      (reference "U?") (unit 1) (value "74LS139") (footprint "")
+      (reference "U?") (unit 2) (value "74LS139") (footprint "")
     )
   )
 )

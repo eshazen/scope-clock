@@ -11,7 +11,8 @@
 #define PI (3.14159265)
 
 // angle in radians to correct for CRT rotation
-#define CRT_ROT (PI-0.489)
+// #define CRT_ROT (PI-0.489)
+#define CRT_ROT (PI-0.489+.05)
 
 typedef struct {
   int draw;

@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define OFF 0x800
+#define OFF 0x400
 
 #define PI 3.14159
 
@@ -31,7 +31,7 @@ int main( int argc, char *argv[])
     ix = (double)sin(a)*r + OFF;
     iy = (double)cos(a)*r + OFF;
     // printf( "%d, %d\n", ix, iy);
-    printf( "\tdw %04xH, %04xH\n", ix, iy);
+    printf( "\tdw %04xH, %04xH\n", 0x8000+ix, iy);
     a += (2.0*PI)/(double)step;
   }
 

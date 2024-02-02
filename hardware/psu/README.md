@@ -5,7 +5,15 @@
 **2023-02-23** Mostly working.  Relay wiring incorrect (see ECOs).  Otherwise all outputs
 verified working, at least with no load.
 
-Requirements-
+## Rev A ECOs
+
+* C13 should be much bigger, maybe 4700uF
+* Bridge footprints are wrong (holes way too small)
+* Relay wiring is incorrect
+* Can't use the S4 or S6 outputs of the CW multipler,
+only S5, S7.  Maybe add an S3 tap?  In any case, fix J14 wiring.
+
+## Requirements
 
 * AC power entry, fuse, power switch
 * +8V for logic (~1A) regulator on CPU board makes 5V for DAC (Antek 6.3V winding too wimpy)
