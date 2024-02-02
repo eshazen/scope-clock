@@ -10,13 +10,8 @@ include <grill.scad>
 mm = 25.4;
 
 sides = 1;
-<<<<<<< HEAD
 front = 1;
-lid = 1;
-=======
-front = 0;
 lid = 0;
->>>>>>> 15269cf9a1d9942f2d86915990cab2c58aa1b534
 left = 1;
 control = 0;			/* control panels */
 chassis = 1;			/* chassis underneath */
