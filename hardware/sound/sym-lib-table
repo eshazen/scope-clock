@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "my_hammond")(type "KiCad")(uri "${KIPRJMOD}/my_hammond.kicad_sym")(options "")(descr ""))
+  (lib (name "my_psg")(type "KiCad")(uri "${KIPRJMOD}/my_psg.kicad_sym")(options "")(descr ""))
+)
