@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "my_compactron")(type "KiCad")(uri "${KIPRJMOD}/my_compactron.kicad_sym")(options "")(descr ""))
+  (lib (name "my_tubes")(type "KiCad")(uri "${KIPRJMOD}/my_tubes.kicad_sym")(options "")(descr ""))
+)
