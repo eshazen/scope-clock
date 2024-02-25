@@ -12,7 +12,7 @@ hgt = 3.0*mm;
 wthk = 1.6;
 bthk = 1.6;
 
-hdia = (3/8)*mm;
+hdia = (3/8+0.02)*mm;
 
 od = id + 2*wthk;
 
@@ -21,9 +21,9 @@ fhgt = 1.64*mm-bthk;
 fid = hdia;
 fod = hdia+5;
 
-cut_hgt = 0.5*mm;
+cut_hgt = 0.75*mm;
 cut_wid = 0.75*mm;
-cut_num = 3.0;
+cut_num = 2.0;
 
 module wall() {
      difference() {
