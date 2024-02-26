@@ -3150,6 +3150,11 @@
     (pad "12" thru_hole oval (at 7.736048 -5.339808) (size 2 2) (drill 1.2) (layers "*.Cu" "*.Mask")
       (net 40 "Net-(J6-Pin_2)") (pinfunction "H2") (pintype "power_in") (thermal_bridge_angle 45) (tstamp 1ef93589-1a3e-4f1a-a0eb-82efb0e75796))
     (pad "13" thru_hole circle (at 0 0) (size 5.588 5.588) (drill 5.08) (layers "*.Cu" "*.Mask") (tstamp e19f239c-7afa-4987-b442-551c12ce8495))
+    (model "${KIPRJMOD}/3D/6T9.wrl"
+      (offset (xyz 0 0 0.635))
+      (scale (xyz 0.3937 0.3937 0.3937))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "Resistor_THT:R_Axial_DIN0414_L11.9mm_D4.5mm_P20.32mm_Horizontal" (layer "F.Cu")
