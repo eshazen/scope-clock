@@ -12,3 +12,5 @@ extra winding on on the Antek can handle this OK.
 
 Planning to use OT8SE+HF+5K transformer I have lying around from MPS.
 It's rated at 45mA DC.
+
+Layout ~ done.  Many parts have DigiKey "TR" option, need to fix this.
