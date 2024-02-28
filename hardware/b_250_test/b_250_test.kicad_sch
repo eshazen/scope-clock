@@ -3679,7 +3679,7 @@
     (property "Datasheet" "~" (at 132.715 109.855 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "CatNo" "693-14910F0GJSX10104KA-ND" (at 135.255 128.27 90)
+    (property "CatNo" "3266Y-1-104LF-ND" (at 135.255 128.27 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Vendor" "DigiKey" (at 132.715 109.855 0)
